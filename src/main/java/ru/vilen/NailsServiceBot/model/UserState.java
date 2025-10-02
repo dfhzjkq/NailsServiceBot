@@ -4,5 +4,6 @@ public enum UserState {
 
     WAITING_NAME,
     WAITING_PHONE,
-    REGISTERED;
+    REGISTERED,
+    WAITING_BOOK;
 }

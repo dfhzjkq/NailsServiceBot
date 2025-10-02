@@ -5,8 +5,14 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import ru.vilen.NailsServiceBot.application.telegram.callback.CallbackType;
 
+import java.time.LocalDate;
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 @UtilityClass
 public class KeyboardUtils {
@@ -36,14 +42,13 @@ public class KeyboardUtils {
                 .callbackData(CallbackType.MY.toString())
                 .build());
 
-        List<InlineKeyboardButton> row3 = new ArrayList<>();
-        row3.add(InlineKeyboardButton.builder()
+        row2.add(InlineKeyboardButton.builder()
                 .text(CallbackType.SETTINGS.getButtonText())
                 .callbackData(CallbackType.SETTINGS.toString())
                 .build());
 
         return InlineKeyboardMarkup.builder()
-                .keyboard(List.of(row1, row2, row3))
+                .keyboard(List.of(row1, row2))
                 .build();
     }
 
@@ -102,8 +107,90 @@ public class KeyboardUtils {
                 .callbackData(CallbackType.CHANGE_PHONE.toString())
                 .build());
 
+        List<InlineKeyboardButton> row3 = new ArrayList<>();
+        row3.add(InlineKeyboardButton.builder()
+                .text(CallbackType.HOME.getButtonText())
+                .callbackData(CallbackType.HOME.toString())
+                .build());
+
         return InlineKeyboardMarkup.builder()
-                .keyboard(List.of(row1, row2))
+                .keyboard(List.of(row1, row2, row3))
+                .build();
+    }
+
+    public static InlineKeyboardMarkup buildDateInlineKeyboard(YearMonth yearMonth) {
+        List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
+
+        // ручной словарь месяцев в именительном падеже
+        String[] monthNames = {
+                "Январь", "Февраль", "Март", "Апрель",
+                "Май", "Июнь", "Июль", "Август",
+                "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"
+        };
+
+        String monthTitle = monthNames[yearMonth.getMonthValue() - 1] + " " + yearMonth.getYear();
+
+        // Заголовок месяца
+        List<InlineKeyboardButton> headerRow = new ArrayList<>();
+        headerRow.add(InlineKeyboardButton.builder().text("◀️").callbackData("CAL_PREV_" + yearMonth).build());
+        headerRow.add(InlineKeyboardButton.builder().text(monthTitle).callbackData("IGNORE").build());
+        headerRow.add(InlineKeyboardButton.builder().text("▶️").callbackData("CAL_NEXT_" + yearMonth).build());
+        keyboard.add(headerRow);
+
+        // Дни недели
+        List<InlineKeyboardButton> weekDays = Arrays.asList(
+                InlineKeyboardButton.builder().text("Пн").callbackData("IGNORE").build(),
+                InlineKeyboardButton.builder().text("Вт").callbackData("IGNORE").build(),
+                InlineKeyboardButton.builder().text("Ср").callbackData("IGNORE").build(),
+                InlineKeyboardButton.builder().text("Чт").callbackData("IGNORE").build(),
+                InlineKeyboardButton.builder().text("Пт").callbackData("IGNORE").build(),
+                InlineKeyboardButton.builder().text("Сб").callbackData("IGNORE").build(),
+                InlineKeyboardButton.builder().text("Вс").callbackData("IGNORE").build()
+        );
+        keyboard.add(weekDays);
+
+        // Построение дней месяца
+        LocalDate firstDay = yearMonth.atDay(1);
+        int lengthOfMonth = yearMonth.lengthOfMonth();
+        int dayOfWeek = firstDay.getDayOfWeek().getValue(); // 1=Пн ... 7=Вс
+
+        List<InlineKeyboardButton> weekRow = new ArrayList<>();
+
+        // Пустые слоты перед первым днём
+        for (int i = 1; i < dayOfWeek; i++) {
+            weekRow.add(InlineKeyboardButton.builder().text(" ").callbackData("IGNORE").build());
+        }
+
+        for (int day = 1; day <= lengthOfMonth; day++) {
+            weekRow.add(InlineKeyboardButton.builder()
+                    .text(String.valueOf(day))
+                    .callbackData("DATE_" + yearMonth + "-" + day)
+                    .build());
+
+            if (weekRow.size() == 7) {
+                keyboard.add(weekRow);
+                weekRow = new ArrayList<>();
+            }
+        }
+
+        // Заполняем последнюю неделю пустыми
+        if (!weekRow.isEmpty()) {
+            while (weekRow.size() < 7) {
+                weekRow.add(InlineKeyboardButton.builder().text(" ").callbackData("IGNORE").build());
+            }
+            keyboard.add(weekRow);
+        }
+
+        // Кнопка "Домой"
+        List<InlineKeyboardButton> homeRow = new ArrayList<>();
+        homeRow.add(InlineKeyboardButton.builder()
+                .text(CallbackType.HOME.getButtonText())
+                .callbackData(CallbackType.HOME.toString())
+                .build());
+        keyboard.add(homeRow);
+
+        return InlineKeyboardMarkup.builder()
+                .keyboard(keyboard)
                 .build();
     }
 }

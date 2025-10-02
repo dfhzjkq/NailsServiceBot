@@ -10,11 +10,13 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.vilen.NailsServiceBot.application.telegram.TelegramBot;
 import ru.vilen.NailsServiceBot.utils.KeyboardUtils;
 
+import java.time.YearMonth;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class BookCallback implements Callback {
+public class DateCallback implements Callback {
 
     TelegramBot bot;
 
@@ -32,9 +34,8 @@ public class BookCallback implements Callback {
 
         SendMessage message = SendMessage.builder()
                 .chatId(chatId)
-                .text("✨Отлично! Что будем делать дальше?\n" +
-                        "Выбери нужное действие ниже ⬇\uFE0F")
-                .replyMarkup(KeyboardUtils.buildBookInlineKeyboard())
+                .text("\uD83D\uDCC5 Пожалуйста, выбери удобную дату из календаря ниже ⬇\uFE0F")
+                .replyMarkup(KeyboardUtils.buildDateInlineKeyboard(YearMonth.now()))
                 .build();
 
         bot.sendNewMessage(message);
@@ -42,6 +43,6 @@ public class BookCallback implements Callback {
 
     @Override
     public CallbackType getType() {
-        return CallbackType.BOOK;
+        return CallbackType.DATE;
     }
 }

@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.vilen.NailsServiceBot.application.telegram.TelegramBot;
-import ru.vilen.NailsServiceBot.utils.KeyboardUtils;
 
 @Slf4j
 @Service
@@ -33,7 +32,6 @@ public class ChangeNameCallback implements Callback {
         SendMessage message = SendMessage.builder()
                 .chatId(chatId)
                 .text("Выбери действие ниже")
-                .replyMarkup(KeyboardUtils.buildSettingsInlineKeyboard())
                 .build();
         bot.sendNewMessage(message);
     }

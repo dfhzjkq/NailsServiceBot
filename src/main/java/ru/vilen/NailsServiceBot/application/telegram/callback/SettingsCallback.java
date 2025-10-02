@@ -8,6 +8,9 @@ import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.vilen.NailsServiceBot.application.telegram.TelegramBot;
+import ru.vilen.NailsServiceBot.model.User;
+import ru.vilen.NailsServiceBot.service.UserService;
+import ru.vilen.NailsServiceBot.utils.KeyboardUtils;
 
 @Slf4j
 @Service
@@ -16,6 +19,7 @@ import ru.vilen.NailsServiceBot.application.telegram.TelegramBot;
 public class SettingsCallback implements Callback {
 
     TelegramBot bot;
+    UserService userService;
 
     @Override
     public void apply(Update update) {
@@ -28,10 +32,19 @@ public class SettingsCallback implements Callback {
                 userId);
 
         Long chatId = update.getCallbackQuery().getMessage().getChatId();
+        User user = userService.getOrCreateUser(chatId);
 
         SendMessage message = SendMessage.builder()
                 .chatId(chatId)
-                .text("Введи новое имя")
+                .text(String.format("""
+                        ✨ Вот твои текущие данные:
+                        
+                        👤 Имя: %s \s
+                        📞 Телефон: %s \s
+                        
+                        Что хочешь обновить? Выбирай действие ниже ⬇️
+                        """, user.getUserName(), user.getPhoneNumber()))
+                .replyMarkup(KeyboardUtils.buildSettingsInlineKeyboard())
                 .build();
         bot.sendNewMessage(message);
     }
