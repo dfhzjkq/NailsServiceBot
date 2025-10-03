@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import ru.vilen.NailsServiceBot.model.User;
 import ru.vilen.NailsServiceBot.model.UserState;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,7 +19,7 @@ public class UserService {
 
     public User getOrCreateUser(Long chatId) {
         return users.computeIfAbsent(chatId,
-                id -> new User(chatId, null, null, UserState.WAITING_NAME));
+                id -> new User(chatId, null, null, null, null, UserState.WAITING_NAME));
     }
 
     public void saveName(Long chatId, String name) {
@@ -32,8 +34,20 @@ public class UserService {
         user.setUserState(UserState.REGISTERED);
     }
 
+    public void saveBookingDate(Long chatId, LocalDate date) {
+        User user = getOrCreateUser(chatId);
+        user.setBookingDate(date);
+        user.setUserState(UserState.WAITING_BOOK);
+    }
+
+    public void saveBookingTime(Long chatId, String time) {
+        User user = getOrCreateUser(chatId);
+        user.setBookingTime(time);
+        user.setUserState(UserState.REGISTERED);
+    }
+
     public boolean isRegistered(Long chatId) {
         User user = getOrCreateUser(chatId);
-        return user.getUserState() == UserState.REGISTERED;
+        return user.getUserState() == UserState.REGISTERED || user.getUserState() == UserState.WAITING_BOOK;
     }
 }

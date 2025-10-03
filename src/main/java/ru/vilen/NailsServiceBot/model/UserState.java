@@ -6,4 +6,5 @@ public enum UserState {
     WAITING_PHONE,
     REGISTERED,
     WAITING_BOOK;
+
 }

@@ -32,7 +32,15 @@ public class DefaultCallbackHandler implements CallbackHandler {
                 update.getUpdateId(),
                 callbackData);
 
-        CallbackType type = CallbackType.valueOf(callbackData);
+        CallbackType type;
+
+        if (callbackData.startsWith("DATE_")) {
+            type = CallbackType.DATE;
+        } else if (callbackData.startsWith("CAL_PREV_") || callbackData.startsWith("CAL_NEXT_")) {
+            type = CallbackType.DATE;
+        } else {
+            type = CallbackType.valueOf(callbackData);
+        }
 
         Callback callback = callbacksMap.get(type);
         if (callback != null) {

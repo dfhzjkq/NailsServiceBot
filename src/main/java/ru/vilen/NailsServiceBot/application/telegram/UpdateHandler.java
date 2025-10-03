@@ -15,7 +15,7 @@ public class UpdateHandler {
 
     CommandHandler commandHandler;
     CallbackHandler callbackHandler;
-    RegisterHandler registerHandler;
+    MessageHandler registerHandler;
 
     void handle(Update update) {
         log.debug("[{}] Получен новый update!",

@@ -13,7 +13,7 @@ import ru.vilen.NailsServiceBot.utils.KeyboardUtils;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class RegisterHandler {
+public class MessageHandler {
 
     TelegramBot bot;
     UserService userService;
@@ -21,6 +21,7 @@ public class RegisterHandler {
     public void handle(Update update) {
         Long chatId = update.getMessage().getChatId();
         User user = userService.getOrCreateUser(chatId);
+        String text = update.getMessage().getText().trim();
 
         switch (user.getUserState()) {
             case WAITING_NAME -> {
@@ -32,7 +33,6 @@ public class RegisterHandler {
                         .build();
                 bot.sendNewMessage(askPhone);
             }
-
             case WAITING_PHONE -> {
                 userService.savePhone(chatId, update.getMessage().getText());
 
@@ -42,6 +42,19 @@ public class RegisterHandler {
                         .replyMarkup(KeyboardUtils.buildHomeInlineKeyboard())
                         .build();
                 bot.sendNewMessage(successMessage);
+            }
+            case WAITING_BOOK -> {
+                userService.saveBookingTime(chatId, text);
+
+                SendMessage confirm = SendMessage.builder()
+                        .chatId(chatId)
+                        .text("✅ Запись создана!\n" +
+                                "Дата: " + user.getBookingDate() + "\n" +
+                                "Время: " + user.getBookingTime() + "\n" +
+                                "Мастер свяжется с тобой в течение 10 минут 💅")
+                        .replyMarkup(KeyboardUtils.buildHomeInlineKeyboard())
+                        .build();
+                bot.sendNewMessage(confirm);
             } default -> {
                 SendMessage successMessage = SendMessage.builder()
                         .chatId(chatId)

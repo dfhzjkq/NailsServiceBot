@@ -8,8 +8,10 @@ import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.vilen.NailsServiceBot.application.telegram.TelegramBot;
+import ru.vilen.NailsServiceBot.service.UserService;
 import ru.vilen.NailsServiceBot.utils.KeyboardUtils;
 
+import java.time.LocalDate;
 import java.time.YearMonth;
 
 @Slf4j
@@ -19,11 +21,13 @@ import java.time.YearMonth;
 public class DateCallback implements Callback {
 
     TelegramBot bot;
+    UserService userService;
 
     @Override
     public void apply(Update update) {
         Long userId = update.getCallbackQuery().getFrom().getId();
         String userName = update.getCallbackQuery().getFrom().getUserName();
+        String data = update.getCallbackQuery().getData();
         log.info("[{}] Callback {} от пользователя {} [id{}]",
                 update.getUpdateId(),
                 getType(),
@@ -32,12 +36,35 @@ public class DateCallback implements Callback {
 
         Long chatId = update.getCallbackQuery().getMessage().getChatId();
 
+        if (data.equals("DATE")) {
+            sendCalendar(chatId, YearMonth.now());
+        } else if (data.startsWith("CAL_PREV_")) {
+            YearMonth ym = YearMonth.parse(data.substring("CAL_PREV_".length()));
+            sendCalendar(chatId, ym.minusMonths(1));
+        } else if (data.startsWith("CAL_NEXT_")) {
+            YearMonth ym = YearMonth.parse(data.substring("CAL_NEXT_".length()));
+            sendCalendar(chatId, ym.plusMonths(1));
+        }
+
+        LocalDate date = LocalDate.parse(data.substring("DATE_".length()));
+
+        userService.saveBookingDate(chatId, date);
+
+        SendMessage askTime = SendMessage.builder()
+                .chatId(chatId)
+                .text("📅 Отлично, дата выбрана: " + date +
+                        "\n⏰ Теперь напиши время вручную (например: 14:30)")
+                .build();
+        bot.sendNewMessage(askTime);
+
+    }
+
+    private void sendCalendar(Long chatId, YearMonth ym) {
         SendMessage message = SendMessage.builder()
                 .chatId(chatId)
-                .text("\uD83D\uDCC5 Пожалуйста, выбери удобную дату из календаря ниже ⬇\uFE0F")
-                .replyMarkup(KeyboardUtils.buildDateInlineKeyboard(YearMonth.now()))
+                .text("📅 Пожалуйста, выбери дату ⬇️")
+                .replyMarkup(KeyboardUtils.buildDateInlineKeyboard(ym))
                 .build();
-
         bot.sendNewMessage(message);
     }
 
