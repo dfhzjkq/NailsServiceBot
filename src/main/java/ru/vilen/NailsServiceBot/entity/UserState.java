@@ -1,4 +1,4 @@
-package ru.vilen.NailsServiceBot.model;
+package ru.vilen.NailsServiceBot.entity;
 
 public enum UserState {
 
