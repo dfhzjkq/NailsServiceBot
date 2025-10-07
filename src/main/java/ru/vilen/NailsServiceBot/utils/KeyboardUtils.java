@@ -121,7 +121,6 @@ public class KeyboardUtils {
     public static InlineKeyboardMarkup buildDateInlineKeyboard(YearMonth yearMonth) {
         List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
 
-        // ручной словарь месяцев в именительном падеже
         String[] monthNames = {
                 "Январь", "Февраль", "Март", "Апрель",
                 "Май", "Июнь", "Июль", "Август",
@@ -152,7 +151,7 @@ public class KeyboardUtils {
         // Построение дней месяца
         LocalDate firstDay = yearMonth.atDay(1);
         int lengthOfMonth = yearMonth.lengthOfMonth();
-        int dayOfWeek = firstDay.getDayOfWeek().getValue(); // 1=Пн ... 7=Вс
+        int dayOfWeek = firstDay.getDayOfWeek().getValue();
 
         List<InlineKeyboardButton> weekRow = new ArrayList<>();
 
@@ -191,6 +190,18 @@ public class KeyboardUtils {
 
         return InlineKeyboardMarkup.builder()
                 .keyboard(keyboard)
+                .build();
+    }
+
+    public static InlineKeyboardMarkup buildMyInlineKeyboard() {
+        List<InlineKeyboardButton> row1 = new ArrayList<>();
+        row1.add(InlineKeyboardButton.builder()
+                .text(CallbackType.CANCEL.getButtonText())
+                .callbackData(CallbackType.CANCEL.toString())
+                .build());
+
+        return InlineKeyboardMarkup.builder()
+                .keyboard(List.of(row1))
                 .build();
     }
 }

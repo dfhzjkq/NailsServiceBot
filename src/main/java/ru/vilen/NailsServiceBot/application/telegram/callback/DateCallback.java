@@ -13,6 +13,7 @@ import ru.vilen.NailsServiceBot.utils.KeyboardUtils;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
 
 @Slf4j
 @Service
@@ -47,12 +48,14 @@ public class DateCallback implements Callback {
         }
 
         LocalDate date = LocalDate.parse(data.substring("DATE_".length()));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        String formattedDate = date.format(formatter);
 
-        userService.saveBookingDate(chatId, date);
+        userService.saveBookingDate(chatId, formattedDate);
 
         SendMessage askTime = SendMessage.builder()
                 .chatId(chatId)
-                .text("📅 Отлично, дата выбрана: " + date +
+                .text("📅 Отлично, дата выбрана: " + formattedDate +
                         "\n⏰ Теперь напиши время вручную (например: 14:30)")
                 .build();
         bot.sendNewMessage(askTime);

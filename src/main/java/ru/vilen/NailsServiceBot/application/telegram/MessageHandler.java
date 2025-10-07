@@ -45,12 +45,13 @@ public class MessageHandler {
             }
             case WAITING_BOOK -> {
                 userService.saveBookingTime(chatId, text);
+                User u = userService.getOrCreateUser(chatId);
 
                 SendMessage confirm = SendMessage.builder()
                         .chatId(chatId)
                         .text("✅ Запись создана!\n" +
                                 "Дата: " + user.getBookingDate() + "\n" +
-                                "Время: " + user.getBookingTime() + "\n" +
+                                "Время: " + u.getBookingTime() + "\n" +
                                 "Мастер свяжется с тобой в течение 10 минут 💅")
                         .replyMarkup(KeyboardUtils.buildHomeInlineKeyboard())
                         .build();

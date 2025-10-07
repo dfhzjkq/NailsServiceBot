@@ -4,8 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalDate;
-
 @Entity
 @Table(name = "users")
 @Setter
@@ -26,7 +24,7 @@ public class User {
     String phoneNumber;
 
     @Column(name = "booking_date")
-    LocalDate bookingDate;
+    String bookingDate;
 
     @Column(name = "booking_time")
     String bookingTime;

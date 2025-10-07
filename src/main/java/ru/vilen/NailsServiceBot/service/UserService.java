@@ -9,6 +9,7 @@ import ru.vilen.NailsServiceBot.entity.UserState;
 import ru.vilen.NailsServiceBot.repository.UserRepository;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 @Service
 @RequiredArgsConstructor
@@ -39,7 +40,7 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public void saveBookingDate(Long chatId, LocalDate date) {
+    public void saveBookingDate(Long chatId, String date) {
         User user = getOrCreateUser(chatId);
         user.setBookingDate(date);
         user.setUserState(UserState.WAITING_BOOK);
