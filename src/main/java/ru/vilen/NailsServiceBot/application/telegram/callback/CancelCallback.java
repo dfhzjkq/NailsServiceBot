@@ -16,7 +16,7 @@ import ru.vilen.NailsServiceBot.utils.KeyboardUtils;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class MyCallback implements Callback {
+public class CancelCallback implements Callback {
 
     TelegramBot bot;
     UserService userService;
@@ -32,29 +32,12 @@ public class MyCallback implements Callback {
                 userId);
 
         Long chatId = update.getCallbackQuery().getMessage().getChatId();
-        User user = userService.getOrCreateUser(chatId);
-
-        if (user.getBookingDate() == null) {
-            SendMessage message = SendMessage.builder()
-                    .chatId(chatId)
-                    .text("У тебя нет активных записей!")
-                    .replyMarkup(KeyboardUtils.buildHomeInlineKeyboard())
-                    .build();
-
-            bot.sendNewMessage(message);
-            return;
-        }
-
-        String date = user.getBookingDate().toString();
-        String time = user.getBookingTime();
+        userService.deleteBooking(chatId);
 
         SendMessage message = SendMessage.builder()
                 .chatId(chatId)
-                .text(String.format("""
-                        Активные записи:
-                        %s на %s
-                        """, date, time))
-                .replyMarkup(KeyboardUtils.buildMyInlineKeyboard())
+                .text("Запись отменена!")
+                .replyMarkup(KeyboardUtils.buildCancelInlineKeyboard())
                 .build();
 
         bot.sendNewMessage(message);
@@ -62,6 +45,6 @@ public class MyCallback implements Callback {
 
     @Override
     public CallbackType getType() {
-        return CallbackType.MY;
+        return CallbackType.CANCEL;
     }
 }

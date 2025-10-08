@@ -8,9 +8,6 @@ import ru.vilen.NailsServiceBot.entity.User;
 import ru.vilen.NailsServiceBot.entity.UserState;
 import ru.vilen.NailsServiceBot.repository.UserRepository;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE,  makeFinal = true)
@@ -51,6 +48,13 @@ public class UserService {
         User user = getOrCreateUser(chatId);
         user.setBookingTime(time);
         user.setUserState(UserState.REGISTERED);
+        userRepository.save(user);
+    }
+
+    public void deleteBooking(Long chatId) {
+        User user = getOrCreateUser(chatId);
+        user.setBookingDate(null);
+        user.setBookingTime(null);
         userRepository.save(user);
     }
 

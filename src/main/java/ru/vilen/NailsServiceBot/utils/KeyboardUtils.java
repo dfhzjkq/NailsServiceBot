@@ -204,4 +204,22 @@ public class KeyboardUtils {
                 .keyboard(List.of(row1))
                 .build();
     }
+
+    public static InlineKeyboardMarkup buildCancelInlineKeyboard() {
+        List<InlineKeyboardButton> row1 = new ArrayList<>();
+        row1.add(InlineKeyboardButton.builder()
+                .text(CallbackType.MY.getButtonText())
+                .callbackData(CallbackType.MY.toString())
+                .build());
+
+        List<InlineKeyboardButton> row2 = new ArrayList<>();
+        row2.add(InlineKeyboardButton.builder()
+                .text(CallbackType.HOME.getButtonText())
+                .callbackData(CallbackType.HOME.toString())
+                .build());
+
+        return InlineKeyboardMarkup.builder()
+                .keyboard(List.of(row1, row2))
+                .build();
+    }
 }
