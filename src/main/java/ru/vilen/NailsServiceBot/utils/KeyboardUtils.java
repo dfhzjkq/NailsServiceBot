@@ -160,11 +160,28 @@ public class KeyboardUtils {
             weekRow.add(InlineKeyboardButton.builder().text(" ").callbackData("IGNORE").build());
         }
 
+        LocalDate today = LocalDate.now();
+
         for (int day = 1; day <= lengthOfMonth; day++) {
-            weekRow.add(InlineKeyboardButton.builder()
-                    .text(String.valueOf(day))
-                    .callbackData("DATE_" + yearMonth + "-" + day)
-                    .build());
+            LocalDate currentDate = yearMonth.atDay(day);
+
+            InlineKeyboardButton button;
+
+            if (currentDate.isBefore(today)) {
+                // прошедшие дни — просто текст, неактивные
+                button = InlineKeyboardButton.builder()
+                        .text("·" + day + "·")  // визуально можно подсветить точками
+                        .callbackData("IGNORE")
+                        .build();
+            } else {
+                // доступные дни — активные кнопки
+                button = InlineKeyboardButton.builder()
+                        .text(String.valueOf(day))
+                        .callbackData("DATE_" + yearMonth + "-" + String.format("%02d", day))
+                        .build();
+            }
+
+            weekRow.add(button);
 
             if (weekRow.size() == 7) {
                 keyboard.add(weekRow);
