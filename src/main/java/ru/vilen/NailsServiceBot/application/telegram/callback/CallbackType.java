@@ -21,8 +21,8 @@ public enum CallbackType {
     BACK("\uD83D\uDD19 Назад"),
     HOME("\uD83C\uDFE0 Главное меню "),
     REGISTER("Зарегистрироваться"),
-    CHANGE_NAME("Изменить имя"),
-    CHANGE_PHONE("Изменить номер телефона");
+    CHANGE_NAME("✏\uFE0F Изменить имя"),
+    CHANGE_PHONE("\uD83D\uDCF1 Изменить номер");
 
     String buttonText;
 }

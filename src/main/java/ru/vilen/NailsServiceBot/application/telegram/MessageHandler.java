@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.vilen.NailsServiceBot.entity.User;
+import ru.vilen.NailsServiceBot.entity.UserState;
 import ru.vilen.NailsServiceBot.service.UserService;
 import ru.vilen.NailsServiceBot.utils.KeyboardUtils;
 
@@ -21,9 +22,10 @@ public class MessageHandler {
     public void handle(Update update) {
         Long chatId = update.getMessage().getChatId();
         User user = userService.getOrCreateUser(chatId);
+        UserState userState = user.getUserState();
         String text = update.getMessage().getText().trim();
 
-        switch (user.getUserState()) {
+        switch (userState) {
             case WAITING_NAME -> {
                 userService.saveName(chatId, update.getMessage().getText());
 
@@ -59,6 +61,26 @@ public class MessageHandler {
                         .replyMarkup(KeyboardUtils.buildHomeInlineKeyboard())
                         .build();
                 bot.sendNewMessage(confirm);
+            }
+            case WAITING_NEW_NAME -> {
+                userService.updateName(chatId, update.getMessage().getText());
+
+                SendMessage message = SendMessage.builder()
+                        .chatId(chatId)
+                        .text("✅ Имя успешно обновлено!\nВозвращайся в главное меню \uD83D\uDC47")
+                        .replyMarkup(KeyboardUtils.buildHomeInlineKeyboard())
+                        .build();
+                bot.sendNewMessage(message);
+            }
+            case WAITING_NEW_PHONE -> {
+                userService.updatePhone(chatId, update.getMessage().getText());
+
+                SendMessage message = SendMessage.builder()
+                        .chatId(chatId)
+                        .text("✅ Номер успешно обновлен!\nВозвращайся в главное меню \uD83D\uDC47")
+                        .replyMarkup(KeyboardUtils.buildHomeInlineKeyboard())
+                        .build();
+                bot.sendNewMessage(message);
             } default -> {
                 SendMessage successMessage = SendMessage.builder()
                         .chatId(chatId)

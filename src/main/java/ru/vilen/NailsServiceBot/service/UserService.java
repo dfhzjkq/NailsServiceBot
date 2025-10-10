@@ -58,6 +58,20 @@ public class UserService {
         userRepository.save(user);
     }
 
+    public void updateName(Long chatId, String name) {
+        User user = getOrCreateUser(chatId);
+        user.setUserName(name);
+        user.setUserState(UserState.REGISTERED);
+        userRepository.save(user);
+    }
+
+    public void updatePhone(Long chatId, String phone) {
+        User user = getOrCreateUser(chatId);
+        user.setPhoneNumber(phone);
+        user.setUserState(UserState.REGISTERED);
+        userRepository.save(user);
+    }
+
     public boolean isRegistered(Long chatId) {
         User user = getOrCreateUser(chatId);
         return user.getUserState() == UserState.REGISTERED ||
