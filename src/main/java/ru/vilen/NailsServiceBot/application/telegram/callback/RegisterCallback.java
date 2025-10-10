@@ -31,7 +31,7 @@ public class RegisterCallback implements Callback {
 
         SendMessage askName = SendMessage.builder()
                 .chatId(chatId)
-                .text("Как тебя зовут?")
+                .text("Напиши, пожалуйста, своё имя \uD83D\uDC47")
                 .build();
         bot.sendNewMessage(askName);
     }

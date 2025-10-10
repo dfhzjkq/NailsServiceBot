@@ -37,7 +37,8 @@ public class MyCallback implements Callback {
         if (user.getBookingDate() == null) {
             SendMessage message = SendMessage.builder()
                     .chatId(chatId)
-                    .text("У тебя нет активных записей!")
+                    .text("✨ Сейчас у тебя нет действующих записей.  \n" +
+                            "Запишись на процедуру, когда будет удобно \uD83D\uDC85")
                     .replyMarkup(KeyboardUtils.buildHomeInlineKeyboard())
                     .build();
 
@@ -51,7 +52,7 @@ public class MyCallback implements Callback {
         SendMessage message = SendMessage.builder()
                 .chatId(chatId)
                 .text(String.format("""
-                        Активные записи:
+                        💅 Твоя действующая запись:
                         %s на %s
                         """, date, time))
                 .replyMarkup(KeyboardUtils.buildMyInlineKeyboard())

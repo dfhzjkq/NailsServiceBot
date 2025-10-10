@@ -61,7 +61,8 @@ public class StartCommand implements Command {
         } else {
             SendMessage successMessage = SendMessage.builder()
                     .chatId(chatId)
-                    .text("Ты уже успешно зарегестрировался!\nПереходи в главное меню по кнопке ниже")
+                    .text("Ты уже успешно зарегистрировался!  \n" +
+                            "Переходи в главное меню по кнопке ниже ⬇\uFE0F")
                     .replyMarkup(KeyboardUtils.buildHomeInlineKeyboard())
                     .build();
             bot.sendNewMessage(successMessage);

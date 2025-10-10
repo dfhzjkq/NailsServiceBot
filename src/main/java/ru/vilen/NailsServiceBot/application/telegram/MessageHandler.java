@@ -29,7 +29,9 @@ public class MessageHandler {
 
                 SendMessage askPhone = SendMessage.builder()
                         .chatId(chatId)
-                        .text("Напиши свой номер телефона")
+                        .text("\uD83D\uDCDE Отлично!  \n" +
+                                "Теперь напиши, пожалуйста, свой номер телефона \uD83D\uDC85  \n" +
+                                "(Просто отправь цифры, например: 89991234567)")
                         .build();
                 bot.sendNewMessage(askPhone);
             }
@@ -38,7 +40,8 @@ public class MessageHandler {
 
                 SendMessage successMessage = SendMessage.builder()
                         .chatId(chatId)
-                        .text("Регистрация прошла успешно!")
+                        .text("\uD83D\uDC96 Готово! Регистрация прошла успешно \uD83C\uDF38  \n" +
+                                "Теперь ты можешь записаться на маникюр \uD83D\uDC85 ")
                         .replyMarkup(KeyboardUtils.buildHomeInlineKeyboard())
                         .build();
                 bot.sendNewMessage(successMessage);
@@ -59,7 +62,8 @@ public class MessageHandler {
             } default -> {
                 SendMessage successMessage = SendMessage.builder()
                         .chatId(chatId)
-                        .text("В боте нет такой команды.\nМожешь перейти в главное меню по кнопке ниже")
+                        .text("Ой, кажется, такой команды нет \uD83D\uDCAC  \n" +
+                                "Переходи в главное меню, чтобы выбрать нужное действие ⬇\uFE0F")
                         .replyMarkup(KeyboardUtils.buildHomeInlineKeyboard())
                         .build();
                 bot.sendNewMessage(successMessage);
