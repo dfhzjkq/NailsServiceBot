@@ -9,7 +9,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.vilen.NailsServiceBot.application.telegram.TelegramBot;
 import ru.vilen.NailsServiceBot.service.UserService;
-import ru.vilen.NailsServiceBot.utils.KeyboardUtils;
+import ru.vilen.NailsServiceBot.utils.UserKeyboardUtils;
 
 @Slf4j
 @Service
@@ -37,7 +37,7 @@ public class CancelCallback implements Callback {
                 .chatId(chatId)
                 .text("\uD83D\uDC85 Запись отменена!  \n" +
                         "Ждём тебя снова \uD83C\uDF38  ")
-                .replyMarkup(KeyboardUtils.buildCancelInlineKeyboard())
+                .replyMarkup(UserKeyboardUtils.buildCancelInlineKeyboard())
                 .build();
 
         bot.sendNewMessage(message);

@@ -9,7 +9,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.vilen.NailsServiceBot.application.telegram.TelegramBot;
 import ru.vilen.NailsServiceBot.service.UserService;
-import ru.vilen.NailsServiceBot.utils.KeyboardUtils;
+import ru.vilen.NailsServiceBot.utils.UserKeyboardUtils;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -66,7 +66,7 @@ public class DateCallback implements Callback {
         SendMessage message = SendMessage.builder()
                 .chatId(chatId)
                 .text("📅 Пожалуйста, выбери дату ⬇️")
-                .replyMarkup(KeyboardUtils.buildDateInlineKeyboard(ym))
+                .replyMarkup(UserKeyboardUtils.buildDateInlineKeyboard(ym))
                 .build();
         bot.sendNewMessage(message);
     }

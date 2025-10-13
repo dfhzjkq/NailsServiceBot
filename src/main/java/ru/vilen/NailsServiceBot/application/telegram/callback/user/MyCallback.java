@@ -10,7 +10,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.vilen.NailsServiceBot.application.telegram.TelegramBot;
 import ru.vilen.NailsServiceBot.entity.User;
 import ru.vilen.NailsServiceBot.service.UserService;
-import ru.vilen.NailsServiceBot.utils.KeyboardUtils;
+import ru.vilen.NailsServiceBot.utils.UserKeyboardUtils;
 
 @Slf4j
 @Service
@@ -39,7 +39,7 @@ public class MyCallback implements Callback {
                     .chatId(chatId)
                     .text("✨ Сейчас у тебя нет действующих записей.  \n" +
                             "Запишись на процедуру, когда будет удобно \uD83D\uDC85")
-                    .replyMarkup(KeyboardUtils.buildHomeInlineKeyboard())
+                    .replyMarkup(UserKeyboardUtils.buildHomeInlineKeyboard())
                     .build();
 
             bot.sendNewMessage(message);
@@ -55,7 +55,7 @@ public class MyCallback implements Callback {
                         💅 Твоя действующая запись:
                         %s на %s
                         """, date, time))
-                .replyMarkup(KeyboardUtils.buildMyInlineKeyboard())
+                .replyMarkup(UserKeyboardUtils.buildMyInlineKeyboard())
                 .build();
 
         bot.sendNewMessage(message);

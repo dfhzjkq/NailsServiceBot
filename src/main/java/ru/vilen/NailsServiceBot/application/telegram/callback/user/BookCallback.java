@@ -8,18 +8,15 @@ import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.vilen.NailsServiceBot.application.telegram.TelegramBot;
-import ru.vilen.NailsServiceBot.entity.User;
-import ru.vilen.NailsServiceBot.service.UserService;
-import ru.vilen.NailsServiceBot.utils.KeyboardUtils;
+import ru.vilen.NailsServiceBot.utils.UserKeyboardUtils;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class SettingsCallback implements Callback {
+public class BookCallback implements Callback {
 
     TelegramBot bot;
-    UserService userService;
 
     @Override
     public void apply(Update update) {
@@ -32,25 +29,19 @@ public class SettingsCallback implements Callback {
                 userId);
 
         Long chatId = update.getCallbackQuery().getMessage().getChatId();
-        User user = userService.getOrCreateUser(chatId);
 
         SendMessage message = SendMessage.builder()
                 .chatId(chatId)
-                .text(String.format("""
-                        ✨ Вот твои текущие данные:
-                        
-                        👤 Имя: %s \s
-                        📞 Телефон: %s \s
-                        
-                        Что хочешь обновить? Выбирай действие ниже ⬇️
-                        """, user.getUserName(), user.getPhoneNumber()))
-                .replyMarkup(KeyboardUtils.buildSettingsInlineKeyboard())
+                .text("✨Отлично! Что будем делать дальше?\n" +
+                        "Выбери нужное действие ниже ⬇\uFE0F")
+                .replyMarkup(UserKeyboardUtils.buildBookInlineKeyboard())
                 .build();
+
         bot.sendNewMessage(message);
     }
 
     @Override
     public CallbackType getType() {
-        return CallbackType.SETTINGS;
+        return CallbackType.BOOK;
     }
 }

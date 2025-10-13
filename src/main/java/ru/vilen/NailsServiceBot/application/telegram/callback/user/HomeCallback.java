@@ -10,7 +10,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.vilen.NailsServiceBot.application.telegram.TelegramBot;
 import ru.vilen.NailsServiceBot.entity.User;
 import ru.vilen.NailsServiceBot.service.UserService;
-import ru.vilen.NailsServiceBot.utils.KeyboardUtils;
+import ru.vilen.NailsServiceBot.utils.UserKeyboardUtils;
 
 @Slf4j
 @Service
@@ -51,7 +51,7 @@ public class HomeCallback implements Callback {
         SendMessage message = SendMessage.builder()
                 .chatId(chatId)
                 .text("Выбери действие ниже ⬇\uFE0F")
-                .replyMarkup(KeyboardUtils.buildMenuInlineKeyboard())
+                .replyMarkup(UserKeyboardUtils.buildMenuInlineKeyboard())
                 .build();
 
         bot.sendNewMessage(homeMessage);
