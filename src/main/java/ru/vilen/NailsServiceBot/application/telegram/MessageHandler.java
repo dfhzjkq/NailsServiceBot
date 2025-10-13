@@ -9,7 +9,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.vilen.NailsServiceBot.entity.User;
 import ru.vilen.NailsServiceBot.entity.UserState;
 import ru.vilen.NailsServiceBot.service.UserService;
-import ru.vilen.NailsServiceBot.utils.KeyboardUtils;
+import ru.vilen.NailsServiceBot.utils.UserKeyboardUtils;
 
 @Service
 @RequiredArgsConstructor
@@ -44,7 +44,7 @@ public class MessageHandler {
                         .chatId(chatId)
                         .text("\uD83D\uDC96 Готово! Регистрация прошла успешно \uD83C\uDF38  \n" +
                                 "Теперь ты можешь записаться на маникюр \uD83D\uDC85 ")
-                        .replyMarkup(KeyboardUtils.buildHomeInlineKeyboard())
+                        .replyMarkup(UserKeyboardUtils.buildHomeInlineKeyboard())
                         .build();
                 bot.sendNewMessage(successMessage);
             }
@@ -58,7 +58,7 @@ public class MessageHandler {
                                 "Дата: " + user.getBookingDate() + "\n" +
                                 "Время: " + u.getBookingTime() + "\n" +
                                 "Мастер свяжется с тобой в течение 10 минут 💅")
-                        .replyMarkup(KeyboardUtils.buildHomeInlineKeyboard())
+                        .replyMarkup(UserKeyboardUtils.buildHomeInlineKeyboard())
                         .build();
                 bot.sendNewMessage(confirm);
             }
@@ -68,7 +68,7 @@ public class MessageHandler {
                 SendMessage message = SendMessage.builder()
                         .chatId(chatId)
                         .text("✅ Имя успешно обновлено!\nВозвращайся в главное меню \uD83D\uDC47")
-                        .replyMarkup(KeyboardUtils.buildHomeInlineKeyboard())
+                        .replyMarkup(UserKeyboardUtils.buildHomeInlineKeyboard())
                         .build();
                 bot.sendNewMessage(message);
             }
@@ -78,7 +78,7 @@ public class MessageHandler {
                 SendMessage message = SendMessage.builder()
                         .chatId(chatId)
                         .text("✅ Номер успешно обновлен!\nВозвращайся в главное меню \uD83D\uDC47")
-                        .replyMarkup(KeyboardUtils.buildHomeInlineKeyboard())
+                        .replyMarkup(UserKeyboardUtils.buildHomeInlineKeyboard())
                         .build();
                 bot.sendNewMessage(message);
             } default -> {
@@ -86,7 +86,7 @@ public class MessageHandler {
                         .chatId(chatId)
                         .text("Ой, кажется, такой команды нет \uD83D\uDCAC  \n" +
                                 "Переходи в главное меню, чтобы выбрать нужное действие ⬇\uFE0F")
-                        .replyMarkup(KeyboardUtils.buildHomeInlineKeyboard())
+                        .replyMarkup(UserKeyboardUtils.buildHomeInlineKeyboard())
                         .build();
                 bot.sendNewMessage(successMessage);
             }

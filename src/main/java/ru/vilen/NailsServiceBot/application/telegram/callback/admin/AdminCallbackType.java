@@ -1,4 +1,4 @@
-package ru.vilen.NailsServiceBot.application.telegram.callback;
+package ru.vilen.NailsServiceBot.application.telegram.callback.admin;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -13,7 +13,7 @@ public enum AdminCallbackType {
     HOME("Главное меню"),
     APPROVE("✅ Принять запись"),
     REJECT("❌ Отклонить запись"),
-    VIEW_SCHEDULE("📅 Расписание"),
+    VIEW_SCHEDULE("📅 Расписание");
 
     String buttonText;
 }

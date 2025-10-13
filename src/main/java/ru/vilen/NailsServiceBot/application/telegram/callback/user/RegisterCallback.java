@@ -1,4 +1,4 @@
-package ru.vilen.NailsServiceBot.application.telegram.callback;
+package ru.vilen.NailsServiceBot.application.telegram.callback.user;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.vilen.NailsServiceBot.application.telegram.TelegramBot;
+import ru.vilen.NailsServiceBot.application.telegram.callback.Callback;
 
 @Slf4j
 @Service
@@ -37,7 +38,7 @@ public class RegisterCallback implements Callback {
     }
 
     @Override
-    public CallbackType getType() {
-        return CallbackType.REGISTER;
+    public UserCallbackType getType() {
+        return UserCallbackType.REGISTER;
     }
 }

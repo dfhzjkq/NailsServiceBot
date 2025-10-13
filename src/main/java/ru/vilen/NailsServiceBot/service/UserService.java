@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 import ru.vilen.NailsServiceBot.entity.User;
+import ru.vilen.NailsServiceBot.entity.UserRole;
 import ru.vilen.NailsServiceBot.entity.UserState;
 import ru.vilen.NailsServiceBot.repository.UserRepository;
 
@@ -18,7 +19,10 @@ public class UserService {
     public User getOrCreateUser(Long chatId) {
         return userRepository.findById(chatId)
                 .orElseGet(() -> {
-                    User newUser = new User(chatId, null, null, null, null, UserState.WAITING_NAME);
+                    User newUser = new User();
+                    newUser.setChatId(chatId);
+                    newUser.setUserState(UserState.WAITING_NAME);
+                    newUser.setRole(UserRole.USER);
                     return userRepository.save(newUser);
                 });
     }
@@ -37,27 +41,6 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public void saveBookingDate(Long chatId, String date) {
-        User user = getOrCreateUser(chatId);
-        user.setBookingDate(date);
-        user.setUserState(UserState.WAITING_BOOK);
-        userRepository.save(user);
-    }
-
-    public void saveBookingTime(Long chatId, String time) {
-        User user = getOrCreateUser(chatId);
-        user.setBookingTime(time);
-        user.setUserState(UserState.REGISTERED);
-        userRepository.save(user);
-    }
-
-    public void deleteBooking(Long chatId) {
-        User user = getOrCreateUser(chatId);
-        user.setBookingDate(null);
-        user.setBookingTime(null);
-        userRepository.save(user);
-    }
-
     public void updateName(Long chatId, String name) {
         User user = getOrCreateUser(chatId);
         user.setUserName(name);
@@ -73,8 +56,14 @@ public class UserService {
     }
 
     public boolean isRegistered(Long chatId) {
-        User user = getOrCreateUser(chatId);
-        return user.getUserState() == UserState.REGISTERED ||
-               user.getUserState() == UserState.WAITING_BOOK;
+        return userRepository.findById(chatId)
+                .map(user -> user.getUserState() == UserState.REGISTERED)
+                .orElse(false);
+    }
+
+    public boolean isAdmin(Long chatId) {
+        return userRepository.findById(chatId)
+                .map(user -> user.getRole() == UserRole.ADMIN)
+                .orElse(false);
     }
 }

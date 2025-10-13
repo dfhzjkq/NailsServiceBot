@@ -1,4 +1,4 @@
-package ru.vilen.NailsServiceBot.application.telegram.callback;
+package ru.vilen.NailsServiceBot.application.telegram.callback.user;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.vilen.NailsServiceBot.application.telegram.TelegramBot;
+import ru.vilen.NailsServiceBot.application.telegram.callback.Callback;
 import ru.vilen.NailsServiceBot.entity.User;
 import ru.vilen.NailsServiceBot.entity.UserState;
 import ru.vilen.NailsServiceBot.repository.UserRepository;
@@ -49,7 +50,7 @@ public class ChangeNameCallback implements Callback {
     }
 
     @Override
-    public CallbackType getType() {
-        return CallbackType.CHANGE_NAME;
+    public UserCallbackType getType() {
+        return UserCallbackType.CHANGE_NAME;
     }
 }

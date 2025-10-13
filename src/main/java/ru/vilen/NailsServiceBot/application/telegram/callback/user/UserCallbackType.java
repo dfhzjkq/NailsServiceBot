@@ -1,4 +1,4 @@
-package ru.vilen.NailsServiceBot.application.telegram.callback;
+package ru.vilen.NailsServiceBot.application.telegram.callback.user;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -8,7 +8,7 @@ import lombok.experimental.FieldDefaults;
 @Getter
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public enum CallbackType {
+public enum UserCallbackType {
 
     BOOK("💅 Записаться на маникюр"),
     MY("📖 Мои записи"),

@@ -1,4 +1,4 @@
-package ru.vilen.NailsServiceBot.application.telegram.callback;
+package ru.vilen.NailsServiceBot.application.telegram.callback.user;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.vilen.NailsServiceBot.application.telegram.TelegramBot;
+import ru.vilen.NailsServiceBot.application.telegram.callback.Callback;
 import ru.vilen.NailsServiceBot.entity.User;
 import ru.vilen.NailsServiceBot.service.UserService;
 import ru.vilen.NailsServiceBot.utils.UserKeyboardUtils;
@@ -50,7 +51,7 @@ public class SettingsCallback implements Callback {
     }
 
     @Override
-    public CallbackType getType() {
-        return CallbackType.SETTINGS;
+    public UserCallbackType getType() {
+        return UserCallbackType.SETTINGS;
     }
 }

@@ -10,7 +10,7 @@ import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.vilen.NailsServiceBot.application.telegram.TelegramBot;
 import ru.vilen.NailsServiceBot.service.UserService;
-import ru.vilen.NailsServiceBot.utils.KeyboardUtils;
+import ru.vilen.NailsServiceBot.utils.UserKeyboardUtils;
 
 @Slf4j
 @Service
@@ -55,7 +55,7 @@ public class StartCommand implements Command {
                         
                         После этого я сохраню заявку и мастер свяжется с тобой для подтверждения 💖
                         """)
-                    .replyMarkup(KeyboardUtils.buildRegisterInlineKeyboard())
+                    .replyMarkup(UserKeyboardUtils.buildRegisterInlineKeyboard())
                     .build();
             bot.sendNewMessage(startMessage);
         } else {
@@ -63,7 +63,7 @@ public class StartCommand implements Command {
                     .chatId(chatId)
                     .text("Ты уже успешно зарегистрировался!  \n" +
                             "Переходи в главное меню по кнопке ниже ⬇\uFE0F")
-                    .replyMarkup(KeyboardUtils.buildHomeInlineKeyboard())
+                    .replyMarkup(UserKeyboardUtils.buildHomeInlineKeyboard())
                     .build();
             bot.sendNewMessage(successMessage);
         }

@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.List;
+
 @Entity
 @Table(name = "users")
 @Setter
@@ -23,13 +25,14 @@ public class User {
     @Column(name = "phone_number")
     String phoneNumber;
 
-    @Column(name = "booking_date")
-    String bookingDate;
-
-    @Column(name = "booking_time")
-    String bookingTime;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "user_state")
     UserState userState;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role")
+    UserRole role;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<Booking> bookings;
 }
