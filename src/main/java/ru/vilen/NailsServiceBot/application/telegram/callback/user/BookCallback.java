@@ -9,6 +9,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.vilen.NailsServiceBot.application.telegram.TelegramBot;
 import ru.vilen.NailsServiceBot.application.telegram.callback.Callback;
+import ru.vilen.NailsServiceBot.service.BookingService;
 import ru.vilen.NailsServiceBot.utils.UserKeyboardUtils;
 
 @Slf4j
@@ -18,6 +19,7 @@ import ru.vilen.NailsServiceBot.utils.UserKeyboardUtils;
 public class BookCallback implements Callback {
 
     TelegramBot bot;
+    BookingService bookingService;
 
     @Override
     public void apply(Update update) {
@@ -30,6 +32,8 @@ public class BookCallback implements Callback {
                 userId);
 
         Long chatId = update.getCallbackQuery().getMessage().getChatId();
+
+        bookingService.clearUnfinishedBooking(chatId);
 
         SendMessage message = SendMessage.builder()
                 .chatId(chatId)

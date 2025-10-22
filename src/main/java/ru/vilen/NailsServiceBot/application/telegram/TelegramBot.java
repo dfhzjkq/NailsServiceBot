@@ -57,16 +57,16 @@ public class TelegramBot extends TelegramLongPollingBot {
         }
     }
 
-    public void initCommands() {
-        List<BotCommand> commands = Arrays
-                .stream(CommandType.values())
-                .map(command -> new BotCommand(command.getName(), command.getDescription()))
-                .toList();
-
-        try {
-            execute(new SetMyCommands(commands, null, null));
-        } catch (TelegramApiException e) {
-            throw new RuntimeException(e);
-        }
-    }
+//    public void initCommands() {
+//        List<BotCommand> commands = Arrays
+//                .stream(CommandType.values())
+//                .map(command -> new BotCommand(command.getName(), command.getDescription()))
+//                .toList();
+//
+//        try {
+//            execute(new SetMyCommands(commands, null, null));
+//        } catch (TelegramApiException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
 }

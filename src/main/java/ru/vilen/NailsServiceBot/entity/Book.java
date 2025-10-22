@@ -3,18 +3,17 @@ package ru.vilen.NailsServiceBot.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
 import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Entity
-@Table(name = "users")
+@Table(name = "bookings")
 @Setter
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Booking {
+public class Book {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,5 +31,5 @@ public class Booking {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
-    BookingStatus status = BookingStatus.PENDING;
+    BookingStatus status;
 }

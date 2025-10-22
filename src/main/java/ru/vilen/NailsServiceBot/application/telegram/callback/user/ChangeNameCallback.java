@@ -10,7 +10,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.vilen.NailsServiceBot.application.telegram.TelegramBot;
 import ru.vilen.NailsServiceBot.application.telegram.callback.Callback;
 import ru.vilen.NailsServiceBot.entity.User;
-import ru.vilen.NailsServiceBot.entity.UserState;
+import ru.vilen.NailsServiceBot.entity.UserStatus;
 import ru.vilen.NailsServiceBot.repository.UserRepository;
 import ru.vilen.NailsServiceBot.service.UserService;
 
@@ -36,7 +36,7 @@ public class ChangeNameCallback implements Callback {
 
         Long chatId = update.getCallbackQuery().getMessage().getChatId();
         User user = userService.getOrCreateUser(chatId);
-        user.setUserState(UserState.WAITING_NEW_NAME);
+        user.setUserState(UserStatus.WAITING_NEW_NAME);
         userRepository.save(user);
 
         log.info("User state пользователя [{}]",  user.getUserState());

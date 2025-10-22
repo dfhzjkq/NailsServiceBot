@@ -26,6 +26,5 @@ public class BotInit {
     public void init() throws TelegramApiException {
         TelegramBotsApi api = new TelegramBotsApi(DefaultBotSession.class);
         api.registerBot(bot);
-        bot.initCommands();
     }
 }

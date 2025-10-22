@@ -27,12 +27,12 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "user_state")
-    UserState userState;
+    UserStatus userState;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role")
     UserRole role;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    List<Booking> bookings;
+    List<Book> bookings;
 }

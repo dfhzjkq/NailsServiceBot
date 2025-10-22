@@ -9,7 +9,9 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.vilen.NailsServiceBot.application.telegram.TelegramBot;
 import ru.vilen.NailsServiceBot.application.telegram.callback.Callback;
+import ru.vilen.NailsServiceBot.entity.Book;
 import ru.vilen.NailsServiceBot.entity.User;
+import ru.vilen.NailsServiceBot.service.BookingService;
 import ru.vilen.NailsServiceBot.service.UserService;
 import ru.vilen.NailsServiceBot.utils.UserKeyboardUtils;
 
@@ -20,7 +22,7 @@ import ru.vilen.NailsServiceBot.utils.UserKeyboardUtils;
 public class MyCallback implements Callback {
 
     TelegramBot bot;
-    UserService userService;
+    BookingService bookingService;
 
     @Override
     public void apply(Update update) {
@@ -33,9 +35,16 @@ public class MyCallback implements Callback {
                 userId);
 
         Long chatId = update.getCallbackQuery().getMessage().getChatId();
-        User user = userService.getOrCreateUser(chatId);
+        bookingService.clearUnfinishedBooking(chatId);
 
-        if (user.getBookingDate() == null) {
+        Book book = null;
+        try {
+            book = bookingService.getActiveBooking(chatId);
+        } catch (Exception e) {
+            log.error("Ошибка при получении активной записи для chatId[{}]: {}", chatId, e.getMessage());
+        }
+
+        if (book == null) {
             SendMessage message = SendMessage.builder()
                     .chatId(chatId)
                     .text("✨ Сейчас у тебя нет действующих записей.  \n" +
@@ -47,8 +56,8 @@ public class MyCallback implements Callback {
             return;
         }
 
-        String date = user.getBookingDate().toString();
-        String time = user.getBookingTime();
+        String date = book.getBookingDate().toString();
+        String time = book.getBookingTime().toString();
 
         SendMessage message = SendMessage.builder()
                 .chatId(chatId)

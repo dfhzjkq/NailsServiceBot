@@ -7,9 +7,15 @@ import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.vilen.NailsServiceBot.entity.User;
-import ru.vilen.NailsServiceBot.entity.UserState;
+import ru.vilen.NailsServiceBot.entity.UserStatus;
+import ru.vilen.NailsServiceBot.repository.UserRepository;
+import ru.vilen.NailsServiceBot.service.BookingService;
 import ru.vilen.NailsServiceBot.service.UserService;
 import ru.vilen.NailsServiceBot.utils.UserKeyboardUtils;
+
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 @Service
 @RequiredArgsConstructor
@@ -18,12 +24,14 @@ public class MessageHandler {
 
     TelegramBot bot;
     UserService userService;
+    UserRepository userRepository;
+    BookingService bookingService;
 
     public void handle(Update update) {
+        String text = update.getMessage().getText().trim();
         Long chatId = update.getMessage().getChatId();
         User user = userService.getOrCreateUser(chatId);
-        UserState userState = user.getUserState();
-        String text = update.getMessage().getText().trim();
+        UserStatus userState = user.getUserState();
 
         switch (userState) {
             case WAITING_NAME -> {
@@ -48,20 +56,6 @@ public class MessageHandler {
                         .build();
                 bot.sendNewMessage(successMessage);
             }
-            case WAITING_BOOK -> {
-                userService.saveBookingTime(chatId, text);
-                User u = userService.getOrCreateUser(chatId);
-
-                SendMessage confirm = SendMessage.builder()
-                        .chatId(chatId)
-                        .text("✅ Запись создана!\n" +
-                                "Дата: " + user.getBookingDate() + "\n" +
-                                "Время: " + u.getBookingTime() + "\n" +
-                                "Мастер свяжется с тобой в течение 10 минут 💅")
-                        .replyMarkup(UserKeyboardUtils.buildHomeInlineKeyboard())
-                        .build();
-                bot.sendNewMessage(confirm);
-            }
             case WAITING_NEW_NAME -> {
                 userService.updateName(chatId, update.getMessage().getText());
 
@@ -81,6 +75,39 @@ public class MessageHandler {
                         .replyMarkup(UserKeyboardUtils.buildHomeInlineKeyboard())
                         .build();
                 bot.sendNewMessage(message);
+            }
+            case WAITING_BOOK -> {
+                try {
+                    LocalTime time = LocalTime.parse(text);
+                    bookingService.saveBookingTime(chatId, time);
+
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+                    String formattedDate = bookingService.getActiveBooking(chatId).getBookingDate().format(formatter);
+
+                    SendMessage message = SendMessage.builder()
+                            .chatId(chatId)
+                            .text("✅ Запись создана!\n" +
+                                    "Дата: " + formattedDate + "\n" +
+                                    "Время: " + text + "\n" +
+                                    "Мастер свяжется с тобой в течение 10 минут 💅")
+                            .replyMarkup(UserKeyboardUtils.buildHomeInlineKeyboard())
+                            .build();
+                    bot.sendNewMessage(message);
+                    user.setUserState(UserStatus.REGISTERED);
+                    userRepository.save(user);
+                } catch (DateTimeParseException e) {
+                    SendMessage error = SendMessage.builder()
+                            .chatId(chatId)
+                            .text("⏰ Неверный формат времени. Введите, например: 14:30")
+                            .build();
+                    bot.sendNewMessage(error);
+                } catch (IllegalStateException e) {
+                    SendMessage busy = SendMessage.builder()
+                            .chatId(chatId)
+                            .text("⚠️ К сожалению, это время уже занято.\nПопробуй выбрать другое ⏰")
+                            .build();
+                    bot.sendNewMessage(busy);
+                }
             } default -> {
                 SendMessage successMessage = SendMessage.builder()
                         .chatId(chatId)

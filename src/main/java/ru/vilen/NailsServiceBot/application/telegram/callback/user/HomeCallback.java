@@ -10,6 +10,8 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.vilen.NailsServiceBot.application.telegram.TelegramBot;
 import ru.vilen.NailsServiceBot.application.telegram.callback.Callback;
 import ru.vilen.NailsServiceBot.entity.User;
+import ru.vilen.NailsServiceBot.entity.UserStatus;
+import ru.vilen.NailsServiceBot.service.BookingService;
 import ru.vilen.NailsServiceBot.service.UserService;
 import ru.vilen.NailsServiceBot.utils.UserKeyboardUtils;
 
@@ -21,6 +23,7 @@ public class HomeCallback implements Callback {
 
     TelegramBot bot;
     UserService userService;
+    BookingService bookingService;
 
     @Override
     public void apply(Update update) {
@@ -33,7 +36,9 @@ public class HomeCallback implements Callback {
                 userId);
 
         Long chatId = update.getCallbackQuery().getMessage().getChatId();
+        bookingService.clearUnfinishedBooking(chatId);
         User user = userService.getOrCreateUser(chatId);
+        user.setUserState(UserStatus.REGISTERED);
         String name = user.getUserName();
 
         SendMessage homeMessage = SendMessage.builder()

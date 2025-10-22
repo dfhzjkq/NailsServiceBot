@@ -1,6 +1,6 @@
 package ru.vilen.NailsServiceBot.entity;
 
-public enum UserState {
+public enum UserStatus {
 
     WAITING_NAME,
     WAITING_PHONE,

@@ -9,6 +9,12 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.vilen.NailsServiceBot.application.telegram.TelegramBot;
 import ru.vilen.NailsServiceBot.application.telegram.callback.Callback;
+import ru.vilen.NailsServiceBot.entity.Book;
+import ru.vilen.NailsServiceBot.entity.BookingStatus;
+import ru.vilen.NailsServiceBot.entity.User;
+import ru.vilen.NailsServiceBot.entity.UserStatus;
+import ru.vilen.NailsServiceBot.repository.UserRepository;
+import ru.vilen.NailsServiceBot.service.BookingService;
 import ru.vilen.NailsServiceBot.service.UserService;
 import ru.vilen.NailsServiceBot.utils.UserKeyboardUtils;
 
@@ -23,7 +29,9 @@ import java.time.format.DateTimeFormatter;
 public class DateCallback implements Callback {
 
     TelegramBot bot;
+    BookingService bookingService;
     UserService userService;
+    UserRepository userRepository;
 
     @Override
     public void apply(Update update) {
@@ -52,7 +60,11 @@ public class DateCallback implements Callback {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
         String formattedDate = date.format(formatter);
 
-        userService.saveBookingDate(chatId, formattedDate);
+        bookingService.saveBookingDate(chatId, date);
+
+        User user = userService.getOrCreateUser(chatId);
+        user.setUserState(UserStatus.WAITING_BOOK);
+        userRepository.save(user);
 
         SendMessage askTime = SendMessage.builder()
                 .chatId(chatId)
