@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.vilen.NailsServiceBot.entity.User;
 import ru.vilen.NailsServiceBot.entity.UserRole;
@@ -12,19 +13,27 @@ import ru.vilen.NailsServiceBot.repository.UserRepository;
 
 @Service
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE,  makeFinal = true)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @Transactional
 public class UserService {
 
-    UserRepository userRepository;
+    @Value("${bot.admin}")
+    Long adminChatId;
+    final UserRepository userRepository;
 
     public User getOrCreateUser(Long chatId) {
         return userRepository.findById(chatId)
                 .orElseGet(() -> {
                     User newUser = new User();
                     newUser.setChatId(chatId);
-                    newUser.setUserState(UserStatus.WAITING_NAME);
-                    newUser.setRole(UserRole.USER);
+
+                    if (isAdmin(chatId)) {
+                        newUser.setRole(UserRole.ADMIN);
+                        newUser.setUserState(UserStatus.REGISTERED);
+                    } else {
+//                        newUser.setUserState(UserStatus.WAITING_NAME);
+                        newUser.setRole(UserRole.USER);
+                    }
                     return userRepository.save(newUser);
                 });
     }
@@ -57,9 +66,15 @@ public class UserService {
         userRepository.save(user);
     }
 
+    public void updateUserLink(Long chatId, String userLink) {
+        User user = getOrCreateUser(chatId);
+        if (userLink != null && !userLink.equals(user.getUserLink())) {
+            user.setUserLink(userLink);
+            userRepository.save(user);
+        }
+    }
+
     public boolean isAdmin(Long chatId) {
-        return userRepository.findById(chatId)
-                .map(user -> user.getRole() == UserRole.ADMIN)
-                .orElse(false);
+        return chatId.equals(adminChatId);
     }
 }

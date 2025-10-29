@@ -9,6 +9,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.vilen.NailsServiceBot.application.telegram.TelegramBot;
 import ru.vilen.NailsServiceBot.application.telegram.callback.Callback;
+import ru.vilen.NailsServiceBot.application.telegram.callback.CallbackType;
 import ru.vilen.NailsServiceBot.entity.User;
 import ru.vilen.NailsServiceBot.entity.UserStatus;
 import ru.vilen.NailsServiceBot.repository.UserRepository;
@@ -49,7 +50,7 @@ public class ChangePhoneCallback implements Callback {
     }
 
     @Override
-    public UserCallbackType getType() {
-        return UserCallbackType.CHANGE_PHONE;
+    public CallbackType getType() {
+        return CallbackType.CHANGE_PHONE;
     }
 }

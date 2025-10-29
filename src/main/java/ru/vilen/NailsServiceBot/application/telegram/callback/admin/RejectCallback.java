@@ -1,4 +1,4 @@
-package ru.vilen.NailsServiceBot.application.telegram.callback.user;
+package ru.vilen.NailsServiceBot.application.telegram.callback.admin;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -10,19 +10,15 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.vilen.NailsServiceBot.application.telegram.TelegramBot;
 import ru.vilen.NailsServiceBot.application.telegram.callback.Callback;
 import ru.vilen.NailsServiceBot.application.telegram.callback.CallbackType;
-import ru.vilen.NailsServiceBot.entity.User;
 import ru.vilen.NailsServiceBot.service.BookingService;
-import ru.vilen.NailsServiceBot.service.UserService;
-import ru.vilen.NailsServiceBot.utils.UserKeyboardUtils;
+import ru.vilen.NailsServiceBot.utils.AdminKeyboardUtils;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class SettingsCallback implements Callback {
-
+public class RejectCallback implements Callback {
     TelegramBot bot;
-    UserService userService;
     BookingService bookingService;
 
     @Override
@@ -36,26 +32,21 @@ public class SettingsCallback implements Callback {
                 userId);
 
         Long chatId = update.getCallbackQuery().getMessage().getChatId();
-        bookingService.clearUnfinishedBooking(chatId);
-        User user = userService.getOrCreateUser(chatId);
 
-        SendMessage message = SendMessage.builder()
+        String data = update.getCallbackQuery().getData();
+        Long bookingId = Long.parseLong(data.split("_")[1]);
+
+        bookingService.rejectBooking(bookingId);
+
+        bot.sendNewMessage(SendMessage.builder()
                 .chatId(chatId)
-                .text(String.format("""
-                        ✨ Вот твои текущие данные:
-                        
-                        👤 Имя: %s \s
-                        📞 Телефон: %s \s
-                        
-                        Что хочешь обновить? Выбирай действие ниже ⬇️
-                        """, user.getUserName(), user.getPhoneNumber()))
-                .replyMarkup(UserKeyboardUtils.buildSettingsInlineKeyboard())
-                .build();
-        bot.sendNewMessage(message);
+                .text("❌ Запись отклонена!")
+                .replyMarkup(AdminKeyboardUtils.buildMenuInlineKeyboard())
+                .build());
     }
 
     @Override
     public CallbackType getType() {
-        return CallbackType.SETTINGS;
+        return CallbackType.REJECT;
     }
 }

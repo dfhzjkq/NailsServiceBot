@@ -11,8 +11,10 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.vilen.NailsServiceBot.application.telegram.TelegramBot;
 import ru.vilen.NailsServiceBot.entity.User;
 import ru.vilen.NailsServiceBot.entity.UserStatus;
+import ru.vilen.NailsServiceBot.repository.UserRepository;
 import ru.vilen.NailsServiceBot.service.BookingService;
 import ru.vilen.NailsServiceBot.service.UserService;
+import ru.vilen.NailsServiceBot.utils.AdminKeyboardUtils;
 import ru.vilen.NailsServiceBot.utils.UserKeyboardUtils;
 
 @Slf4j
@@ -23,13 +25,15 @@ public class StartCommand implements Command {
 
     TelegramBot bot;
     UserService userService;
-    private final BookingService bookingService;
+    BookingService bookingService;
+    UserRepository userRepository;
 
     @Override
     public void apply(Update update) {
         Long chatId = update.getMessage().getChatId();
         Long userId = update.getMessage().getFrom().getId();
         String userName = update.getMessage().getFrom().getUserName();
+        userService.updateUserLink(chatId, userName);
 
         log.info (
                 "[{}] Команда {} от пользователя {} [id={}]",
@@ -48,7 +52,19 @@ public class StartCommand implements Command {
         bookingService.clearUnfinishedBooking(chatId);
         User user = userService.getOrCreateUser(chatId);
 
+        if (userService.isAdmin(chatId)) {
+            SendMessage adminMsg = SendMessage.builder()
+                    .chatId(chatId)
+                    .text("👑 Добро пожаловать, босс!\nБот Виленчика к твоим услугам\uD83D\uDE01")
+                    .replyMarkup(AdminKeyboardUtils.buildMenuInlineKeyboard())
+                    .build();
+            bot.sendNewMessage(adminMsg);
+            return;
+        }
+
         if (user.getUserState() == null) {
+            user.setUserState(UserStatus.WAITING_NAME);
+            userRepository.save(user);
             SendMessage startMessage = SendMessage.builder()
                     .chatId(chatId)
                     .text("""
@@ -79,7 +95,7 @@ public class StartCommand implements Command {
                             .text("Мы почти закончили! 📱\nПожалуйста, отправь свой номер телефона:")
                             .build()
             );
-        } if (user.getUserState() == UserStatus.REGISTERED || user.getUserState() == UserStatus.WAITING_BOOK) {
+        } else if (user.getUserState() == UserStatus.REGISTERED || user.getUserState() == UserStatus.WAITING_BOOK) {
             bot.sendNewMessage(
                     SendMessage.builder()
                             .chatId(chatId)

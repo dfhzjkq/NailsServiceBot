@@ -3,7 +3,7 @@ package ru.vilen.NailsServiceBot.utils;
 import lombok.experimental.UtilityClass;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
-import ru.vilen.NailsServiceBot.application.telegram.callback.user.UserCallbackType;
+import ru.vilen.NailsServiceBot.application.telegram.callback.CallbackType;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -29,19 +29,19 @@ public class UserKeyboardUtils {
     public static InlineKeyboardMarkup buildMenuInlineKeyboard() {
         List<InlineKeyboardButton> row1 = new ArrayList<>();
         row1.add(InlineKeyboardButton.builder()
-                .text(UserCallbackType.BOOK.getButtonText())
-                .callbackData(UserCallbackType.BOOK.toString())
+                .text(CallbackType.BOOK.getButtonText())
+                .callbackData(CallbackType.BOOK.toString())
                 .build());
 
         List<InlineKeyboardButton> row2 = new ArrayList<>();
         row2.add(InlineKeyboardButton.builder()
-                .text(UserCallbackType.MY.getButtonText())
-                .callbackData(UserCallbackType.MY.toString())
+                .text(CallbackType.MY.getButtonText())
+                .callbackData(CallbackType.MY.toString())
                 .build());
 
         row2.add(InlineKeyboardButton.builder()
-                .text(UserCallbackType.SETTINGS.getButtonText())
-                .callbackData(UserCallbackType.SETTINGS.toString())
+                .text(CallbackType.SETTINGS.getButtonText())
+                .callbackData(CallbackType.SETTINGS.toString())
                 .build());
 
         return InlineKeyboardMarkup.builder()
@@ -52,14 +52,14 @@ public class UserKeyboardUtils {
     public static InlineKeyboardMarkup buildBookInlineKeyboard() {
         List<InlineKeyboardButton> row1 = new ArrayList<>();
         row1.add(InlineKeyboardButton.builder()
-                .text(UserCallbackType.DATE.getButtonText())
-                .callbackData(UserCallbackType.DATE.toString())
+                .text(CallbackType.DATE.getButtonText())
+                .callbackData(CallbackType.DATE.toString())
                 .build());
 
         List<InlineKeyboardButton> row2 = new ArrayList<>();
         row2.add(InlineKeyboardButton.builder()
-                .text(UserCallbackType.HOME.getButtonText())
-                .callbackData(UserCallbackType.HOME.toString())
+                .text(CallbackType.HOME.getButtonText())
+                .callbackData(CallbackType.HOME.toString())
                 .build());
 
         return InlineKeyboardMarkup.builder()
@@ -70,8 +70,8 @@ public class UserKeyboardUtils {
     public static InlineKeyboardMarkup buildHomeInlineKeyboard() {
         List<InlineKeyboardButton> row1 = new ArrayList<>();
         row1.add(InlineKeyboardButton.builder()
-                .text(UserCallbackType.HOME.getButtonText())
-                .callbackData(UserCallbackType.HOME.toString())
+                .text(CallbackType.HOME.getButtonText())
+                .callbackData(CallbackType.HOME.toString())
                 .build());
 
         return InlineKeyboardMarkup.builder()
@@ -82,8 +82,8 @@ public class UserKeyboardUtils {
     public static InlineKeyboardMarkup buildRegisterInlineKeyboard() {
         List<InlineKeyboardButton> row1 = new ArrayList<>();
         row1.add(InlineKeyboardButton.builder()
-                .text(UserCallbackType.REGISTER.getButtonText())
-                .callbackData(UserCallbackType.REGISTER.toString())
+                .text(CallbackType.REGISTER.getButtonText())
+                .callbackData(CallbackType.REGISTER.toString())
                 .build());
 
         return InlineKeyboardMarkup.builder()
@@ -94,20 +94,20 @@ public class UserKeyboardUtils {
     public static InlineKeyboardMarkup buildSettingsInlineKeyboard() {
         List<InlineKeyboardButton> row1 = new ArrayList<>();
         row1.add(InlineKeyboardButton.builder()
-                .text(UserCallbackType.CHANGE_NAME.getButtonText())
-                .callbackData(UserCallbackType.CHANGE_NAME.toString())
+                .text(CallbackType.CHANGE_NAME.getButtonText())
+                .callbackData(CallbackType.CHANGE_NAME.toString())
                 .build());
 
         List<InlineKeyboardButton> row2 = new ArrayList<>();
         row2.add(InlineKeyboardButton.builder()
-                .text(UserCallbackType.CHANGE_PHONE.getButtonText())
-                .callbackData(UserCallbackType.CHANGE_PHONE.toString())
+                .text(CallbackType.CHANGE_PHONE.getButtonText())
+                .callbackData(CallbackType.CHANGE_PHONE.toString())
                 .build());
 
         List<InlineKeyboardButton> row3 = new ArrayList<>();
         row3.add(InlineKeyboardButton.builder()
-                .text(UserCallbackType.HOME.getButtonText())
-                .callbackData(UserCallbackType.HOME.toString())
+                .text(CallbackType.HOME.getButtonText())
+                .callbackData(CallbackType.HOME.toString())
                 .build());
 
         return InlineKeyboardMarkup.builder()
@@ -197,8 +197,8 @@ public class UserKeyboardUtils {
         // Кнопка "Домой"
         List<InlineKeyboardButton> homeRow = new ArrayList<>();
         homeRow.add(InlineKeyboardButton.builder()
-                .text(UserCallbackType.HOME.getButtonText())
-                .callbackData(UserCallbackType.HOME.toString())
+                .text(CallbackType.HOME.getButtonText())
+                .callbackData(CallbackType.HOME.toString())
                 .build());
         keyboard.add(homeRow);
 
@@ -210,8 +210,8 @@ public class UserKeyboardUtils {
     public static InlineKeyboardMarkup buildMyInlineKeyboard() {
         List<InlineKeyboardButton> row1 = new ArrayList<>();
         row1.add(InlineKeyboardButton.builder()
-                .text(UserCallbackType.CANCEL.getButtonText())
-                .callbackData(UserCallbackType.CANCEL.toString())
+                .text(CallbackType.CANCEL.getButtonText())
+                .callbackData(CallbackType.CANCEL.toString())
                 .build());
 
         return InlineKeyboardMarkup.builder()
@@ -222,14 +222,14 @@ public class UserKeyboardUtils {
     public static InlineKeyboardMarkup buildCancelInlineKeyboard() {
         List<InlineKeyboardButton> row1 = new ArrayList<>();
         row1.add(InlineKeyboardButton.builder()
-                .text(UserCallbackType.MY.getButtonText())
-                .callbackData(UserCallbackType.MY.toString())
+                .text(CallbackType.MY.getButtonText())
+                .callbackData(CallbackType.MY.toString())
                 .build());
 
         List<InlineKeyboardButton> row2 = new ArrayList<>();
         row2.add(InlineKeyboardButton.builder()
-                .text(UserCallbackType.HOME.getButtonText())
-                .callbackData(UserCallbackType.HOME.toString())
+                .text(CallbackType.HOME.getButtonText())
+                .callbackData(CallbackType.HOME.toString())
                 .build());
 
         return InlineKeyboardMarkup.builder()

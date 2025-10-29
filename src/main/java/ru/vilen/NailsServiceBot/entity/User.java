@@ -33,6 +33,9 @@ public class User {
     @Column(name = "role")
     UserRole role;
 
+    @Column(name = "user_link")
+    String userLink;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     List<Book> bookings;
 }

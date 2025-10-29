@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.vilen.NailsServiceBot.application.telegram.CallbackHandler;
-import ru.vilen.NailsServiceBot.application.telegram.callback.user.UserCallbackType;
 
 import java.util.HashMap;
 import java.util.List;
@@ -18,7 +17,7 @@ import java.util.Map;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class DefaultCallbackHandler implements CallbackHandler {
 
-    Map<UserCallbackType, Callback> callbacksMap;
+    Map<CallbackType, Callback> callbacksMap;
 
     @Autowired
     public DefaultCallbackHandler(List<Callback> callbacks) {
@@ -33,14 +32,18 @@ public class DefaultCallbackHandler implements CallbackHandler {
                 update.getUpdateId(),
                 callbackData);
 
-        UserCallbackType type;
+        CallbackType type;
 
         if (callbackData.startsWith("DATE_")) {
-            type = UserCallbackType.DATE;
+            type = CallbackType.DATE;
         } else if (callbackData.startsWith("CAL_PREV_") || callbackData.startsWith("CAL_NEXT_")) {
-            type = UserCallbackType.DATE;
+            type = CallbackType.DATE;
+        } else if (callbackData.startsWith("APPROVE_")) {
+            type = CallbackType.APPROVE;
+        } else if (callbackData.startsWith("REJECT_")) {
+            type = CallbackType.REJECT;
         } else {
-            type = UserCallbackType.valueOf(callbackData);
+            type = CallbackType.valueOf(callbackData);
         }
 
         Callback callback = callbacksMap.get(type);

@@ -9,6 +9,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.vilen.NailsServiceBot.application.telegram.TelegramBot;
 import ru.vilen.NailsServiceBot.application.telegram.callback.Callback;
+import ru.vilen.NailsServiceBot.application.telegram.callback.CallbackType;
 
 @Slf4j
 @Service
@@ -38,7 +39,7 @@ public class RegisterCallback implements Callback {
     }
 
     @Override
-    public UserCallbackType getType() {
-        return UserCallbackType.REGISTER;
+    public CallbackType getType() {
+        return CallbackType.REGISTER;
     }
 }

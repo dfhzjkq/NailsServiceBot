@@ -9,6 +9,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.vilen.NailsServiceBot.application.telegram.TelegramBot;
 import ru.vilen.NailsServiceBot.application.telegram.callback.Callback;
+import ru.vilen.NailsServiceBot.application.telegram.callback.CallbackType;
 import ru.vilen.NailsServiceBot.service.BookingService;
 import ru.vilen.NailsServiceBot.utils.UserKeyboardUtils;
 
@@ -46,7 +47,7 @@ public class BookCallback implements Callback {
     }
 
     @Override
-    public UserCallbackType getType() {
-        return UserCallbackType.BOOK;
+    public CallbackType getType() {
+        return CallbackType.BOOK;
     }
 }

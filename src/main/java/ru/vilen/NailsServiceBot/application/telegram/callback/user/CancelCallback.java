@@ -9,8 +9,8 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.vilen.NailsServiceBot.application.telegram.TelegramBot;
 import ru.vilen.NailsServiceBot.application.telegram.callback.Callback;
+import ru.vilen.NailsServiceBot.application.telegram.callback.CallbackType;
 import ru.vilen.NailsServiceBot.service.BookingService;
-import ru.vilen.NailsServiceBot.service.UserService;
 import ru.vilen.NailsServiceBot.utils.UserKeyboardUtils;
 
 @Slf4j
@@ -46,7 +46,7 @@ public class CancelCallback implements Callback {
     }
 
     @Override
-    public UserCallbackType getType() {
-        return UserCallbackType.CANCEL;
+    public CallbackType getType() {
+        return CallbackType.CANCEL;
     }
 }
