@@ -26,10 +26,12 @@ public enum CallbackType {
     CHANGE_PHONE("\uD83D\uDCF1 Изменить номер"),
 
     // Admin
-    ADMIN_HOME("\uD83C\uDFE0 Главное меню"),
+    ADMIN_HOME("Главное меню"),
     APPROVE("✅ Принять запись"),
     REJECT("❌ Отклонить запись"),
-    SCHEDULE("📅 Расписание");
+    SCHEDULE("Расписание"),
+    USERS("Пользователи"),
+    SCHEDULE_FOR_TODAY("Расписание на сегодня");
 
     String buttonText;
 }

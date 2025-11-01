@@ -23,4 +23,6 @@ public interface BookingRepository extends JpaRepository<Book, Long> {
     Optional<Book> findFirstByUserChatIdAndStatus(Long chatId, BookingStatus status);
 
     Optional<Book> findFirstByUserChatIdAndStatusIn(Long chatId, List<BookingStatus> statuses);
+
+    Optional<Book> findFirstByUserChatId(Long chatId);
 }

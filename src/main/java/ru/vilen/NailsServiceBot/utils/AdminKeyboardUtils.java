@@ -13,12 +13,25 @@ public class AdminKeyboardUtils {
     public static InlineKeyboardMarkup buildMenuInlineKeyboard() {
         List<InlineKeyboardButton> row1 = new ArrayList<>();
         row1.add(InlineKeyboardButton.builder()
+                .text(CallbackType.SCHEDULE_FOR_TODAY.getButtonText())
+                .callbackData(CallbackType.SCHEDULE_FOR_TODAY.toString())
+                .build());
+
+        List<InlineKeyboardButton> row2 = new ArrayList<>();
+        row2.add(InlineKeyboardButton.builder()
                 .text(CallbackType.SCHEDULE.getButtonText())
                 .callbackData(CallbackType.SCHEDULE.toString())
                 .build());
 
+
+        List<InlineKeyboardButton> row3 = new ArrayList<>();
+        row3.add(InlineKeyboardButton.builder()
+                .text(CallbackType.USERS.getButtonText())
+                .callbackData(CallbackType.USERS.toString())
+                .build());
+
         return InlineKeyboardMarkup.builder()
-                .keyboard(List.of(row1))
+                .keyboard(List.of(row1, row2, row3))
                 .build();
     }
 

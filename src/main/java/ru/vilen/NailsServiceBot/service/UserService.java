@@ -5,11 +5,14 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.vilen.NailsServiceBot.entity.User;
 import ru.vilen.NailsServiceBot.entity.UserRole;
 import ru.vilen.NailsServiceBot.entity.UserStatus;
 import ru.vilen.NailsServiceBot.repository.UserRepository;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -76,5 +79,9 @@ public class UserService {
 
     public boolean isAdmin(Long chatId) {
         return chatId.equals(adminChatId);
+    }
+
+    public List<User> getAllUsers() {
+        return userRepository.findAll(Sort.by("userName").ascending());
     }
 }

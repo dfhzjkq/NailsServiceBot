@@ -57,6 +57,21 @@
             Book booking = bookingRepository.findFirstByUserChatIdAndStatus(chatId, BookingStatus.WAITING_TIME)
                     .orElseThrow(() -> new IllegalStateException("Сначала нужно выбрать дату"));
 
+            Book existingBooking = bookingRepository.findFirstByUserChatIdAndStatusIn(
+                    chatId, List.of(BookingStatus.PENDING, BookingStatus.CONFIRMED)
+            ).orElse(null);
+
+            if (existingBooking != null) {
+                deleteBookingById(existingBooking.getId());
+                bot.sendNewMessage(SendMessage.builder()
+                        .chatId(chatId)
+                        .text("""
+                        ⚠️ Твоя предыдущая запись была отменена, чтобы освободить место для новой.\n
+                        📅 Не переживай! Я уже сохранил новую дату и время 💖
+                        """)
+                        .build());
+            }
+
             if (bookingRepository.existsByBookingDateAndBookingTime(booking.getBookingDate(), time)) {
                 log.warn("Время [{}] уже занято", time);
                 throw new IllegalStateException("Это время уже занято!");
@@ -79,9 +94,10 @@
 
         public void cancelBooking(Long chatId) {
             log.debug("Отмена записи пользователя chatId[{}]", chatId);
-            bookingRepository.findFirstByUserChatIdAndStatus(chatId, BookingStatus.PENDING).ifPresent(booking -> {
+            bookingRepository.findFirstByUserChatId(chatId).ifPresent(booking -> {
                 booking.setStatus(BookingStatus.CANCELLED);
-                bookingRepository.save(booking);
+                deleteBookingById(booking.getId());
+//                bookingRepository.save(booking);
             });
         }
 
@@ -150,12 +166,21 @@
         public void rejectBooking(Long bookingId) {
             bookingRepository.findById(bookingId).ifPresent(booking -> {
                 booking.setStatus(BookingStatus.REJECTED);
-                bookingRepository.save(booking);
+                deleteBookingById(bookingId);
+//                bookingRepository.save(booking);
 
                 bot.sendNewMessage(SendMessage.builder()
                         .chatId(booking.getUser().getChatId())
                         .text("⚠️ К сожалению, ваша запись отклонена.")
                         .build());
             });
+        }
+
+        public void deleteBookingById(Long id) {
+            if (bookingRepository.existsById(id)) {
+                bookingRepository.deleteById(id);
+            } else {
+                throw new IllegalArgumentException();
+            }
         }
     }
