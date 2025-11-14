@@ -10,7 +10,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.vilen.NailsServiceBot.application.telegram.TelegramBot;
 import ru.vilen.NailsServiceBot.application.telegram.callback.Callback;
 import ru.vilen.NailsServiceBot.application.telegram.callback.CallbackType;
-import ru.vilen.NailsServiceBot.entity.Book;
+import ru.vilen.NailsServiceBot.entity.Booking;
 import ru.vilen.NailsServiceBot.service.BookingService;
 import ru.vilen.NailsServiceBot.utils.UserKeyboardUtils;
 
@@ -36,7 +36,7 @@ public class MyCallback implements Callback {
         Long chatId = update.getCallbackQuery().getMessage().getChatId();
         bookingService.clearUnfinishedBooking(chatId);
 
-        Book book = null;
+        Booking book = null;
         try {
             book = bookingService.getActiveBooking(chatId);
         } catch (Exception e) {

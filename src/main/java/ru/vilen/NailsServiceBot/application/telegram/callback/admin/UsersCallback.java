@@ -11,6 +11,7 @@ import ru.vilen.NailsServiceBot.application.telegram.TelegramBot;
 import ru.vilen.NailsServiceBot.application.telegram.callback.Callback;
 import ru.vilen.NailsServiceBot.application.telegram.callback.CallbackType;
 import ru.vilen.NailsServiceBot.entity.User;
+import ru.vilen.NailsServiceBot.entity.UserRole;
 import ru.vilen.NailsServiceBot.service.UserService;
 import ru.vilen.NailsServiceBot.utils.AdminKeyboardUtils;
 
@@ -52,25 +53,27 @@ public class UsersCallback implements Callback {
         StringBuilder sb = new StringBuilder("Все пользователи:\n\n");
 
         for (User user : users) {
-            String line = String.format("""
+            if (user.getRole() != UserRole.ADMIN) {
+                String line = String.format("""
                 Имя: %s
                 Телефон: @%s
                 Id: @%d
                 Ссылка: @%s\n
                 """,
-                    user.getUserName(),
-                    user.getPhoneNumber(),
-                    user.getChatId(),
-                    user.getUserLink()
-            );
+                        user.getUserName(),
+                        user.getPhoneNumber(),
+                        user.getChatId(),
+                        user.getUserLink()
+                );
 
-            sb.append(line);
+                sb.append(line);
+            }
         }
 
         SendMessage bookingsMessage = SendMessage.builder()
                 .chatId(chatId)
                 .text(sb.toString())
-                .replyMarkup(AdminKeyboardUtils.buildScheduleInlineKeyboard())
+                .replyMarkup(AdminKeyboardUtils.buildUsersInlineKeyboard())
                 .build();
 
         bot.sendNewMessage(bookingsMessage);

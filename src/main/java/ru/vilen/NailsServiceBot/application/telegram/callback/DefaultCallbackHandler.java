@@ -38,6 +38,8 @@ public class DefaultCallbackHandler implements CallbackHandler {
             type = CallbackType.DATE;
         } else if (callbackData.startsWith("CAL_PREV_") || callbackData.startsWith("CAL_NEXT_")) {
             type = CallbackType.DATE;
+        } else if (callbackData.startsWith("TYPE_")) {
+            type = CallbackType.DATE;
         } else if (callbackData.startsWith("APPROVE_")) {
             type = CallbackType.APPROVE;
         } else if (callbackData.startsWith("REJECT_")) {

@@ -31,7 +31,11 @@ public enum CallbackType {
     REJECT("❌ Отклонить запись"),
     SCHEDULE("Расписание"),
     USERS("Пользователи"),
-    SCHEDULE_FOR_TODAY("Расписание на сегодня");
+    SCHEDULE_FOR_TODAY("Расписание на сегодня"),
+    DELETE_USER("Удалить пользователя"),
+    BAN_USER("Отправить в бан"),
+    CHANGE_BOOKING("Изменить запись"),
+    DELETE_BOOKING("Удалить запись");
 
     String buttonText;
 }

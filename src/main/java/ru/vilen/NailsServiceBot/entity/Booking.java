@@ -13,7 +13,7 @@ import java.time.LocalTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Book {
+public class Booking {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,6 +30,14 @@ public class Book {
     LocalTime bookingTime;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "booking_type", nullable = false)
+    BookingType bookingType;
+
+    @Enumerated(EnumType.STRING)
     @Column(name = "status")
     BookingStatus status;
+
+    public int getDuration() {
+        return bookingType != null ? bookingType.getDuration() : 0;
+    }
 }

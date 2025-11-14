@@ -38,12 +38,24 @@ public class AdminKeyboardUtils {
     public static InlineKeyboardMarkup buildScheduleInlineKeyboard() {
         List<InlineKeyboardButton> row1 = new ArrayList<>();
         row1.add(InlineKeyboardButton.builder()
+                .text(CallbackType.CHANGE_BOOKING.getButtonText())
+                .callbackData(CallbackType.CHANGE_BOOKING.toString())
+                .build());
+
+        List<InlineKeyboardButton> row2 = new ArrayList<>();
+        row2.add(InlineKeyboardButton.builder()
+                .text(CallbackType.DELETE_BOOKING.getButtonText())
+                .callbackData(CallbackType.DELETE_BOOKING.toString())
+                .build());
+
+        List<InlineKeyboardButton> row3 = new ArrayList<>();
+        row3.add(InlineKeyboardButton.builder()
                 .text(CallbackType.ADMIN_HOME.getButtonText())
                 .callbackData(CallbackType.ADMIN_HOME.toString())
                 .build());
 
         return InlineKeyboardMarkup.builder()
-                .keyboard(List.of(row1))
+                .keyboard(List.of(row1, row2, row3))
                 .build();
     }
 
@@ -62,6 +74,30 @@ public class AdminKeyboardUtils {
 
         return InlineKeyboardMarkup.builder()
                 .keyboard(List.of(row1, row2))
+                .build();
+    }
+
+    public static InlineKeyboardMarkup buildUsersInlineKeyboard() {
+        List<InlineKeyboardButton> row1 = new ArrayList<>();
+        row1.add(InlineKeyboardButton.builder()
+                .text(CallbackType.DELETE_USER.getButtonText())
+                .callbackData(CallbackType.DELETE_USER.toString())
+                .build());
+
+        List<InlineKeyboardButton> row2 = new ArrayList<>();
+        row2.add(InlineKeyboardButton.builder()
+                .text(CallbackType.BAN_USER.getButtonText())
+                .callbackData(CallbackType.BAN_USER.toString())
+                .build());
+
+        List<InlineKeyboardButton> row3 = new ArrayList<>();
+        row3.add(InlineKeyboardButton.builder()
+                .text(CallbackType.ADMIN_HOME.getButtonText())
+                .callbackData(CallbackType.ADMIN_HOME.toString())
+                .build());
+
+        return InlineKeyboardMarkup.builder()
+                .keyboard(List.of(row1, row2, row3))
                 .build();
     }
 }

@@ -37,5 +37,5 @@ public class User {
     String userLink;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    List<Book> bookings;
+    List<Booking> bookings;
 }

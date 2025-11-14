@@ -17,7 +17,7 @@ import ru.vilen.NailsServiceBot.utils.UserKeyboardUtils;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class BookCallback implements Callback {
+public class BookingCallback implements Callback {
 
     TelegramBot bot;
     BookingService bookingService;
@@ -38,8 +38,7 @@ public class BookCallback implements Callback {
 
         SendMessage message = SendMessage.builder()
                 .chatId(chatId)
-                .text("✨Отлично! Что будем делать дальше?\n" +
-                        "Выбери нужное действие ниже ⬇\uFE0F")
+                .text("✨Выбери тип услуги:")
                 .replyMarkup(UserKeyboardUtils.buildBookInlineKeyboard())
                 .build();
 

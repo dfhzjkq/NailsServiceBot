@@ -98,7 +98,7 @@ public class MessageHandler {
                 } catch (DateTimeParseException e) {
                     SendMessage error = SendMessage.builder()
                             .chatId(chatId)
-                            .text("⏰ Неверный формат времени. Введите, например: 14:30")
+                            .text("⏰ Неверный формат времени.\nПроследи чтобы посередине было «:».\nВведи, например: 09:00")
                             .build();
                     bot.sendNewMessage(error);
                 } catch (IllegalStateException e) {

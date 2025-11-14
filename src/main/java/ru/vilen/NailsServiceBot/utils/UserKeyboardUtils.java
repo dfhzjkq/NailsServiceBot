@@ -4,6 +4,7 @@ import lombok.experimental.UtilityClass;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import ru.vilen.NailsServiceBot.application.telegram.callback.CallbackType;
+import ru.vilen.NailsServiceBot.entity.BookingType;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -52,18 +53,29 @@ public class UserKeyboardUtils {
     public static InlineKeyboardMarkup buildBookInlineKeyboard() {
         List<InlineKeyboardButton> row1 = new ArrayList<>();
         row1.add(InlineKeyboardButton.builder()
-                .text(CallbackType.DATE.getButtonText())
-                .callbackData(CallbackType.DATE.toString())
+                .text(BookingType.MANICURE.getLabel())
+                .callbackData("TYPE_MANICURE")
+                .build());
+
+        row1.add(InlineKeyboardButton.builder()
+                .text(BookingType.PEDICURE.getLabel())
+                .callbackData("TYPE_PEDICURE")
                 .build());
 
         List<InlineKeyboardButton> row2 = new ArrayList<>();
         row2.add(InlineKeyboardButton.builder()
+                .text(BookingType.BOTH.getLabel())
+                .callbackData("TYPE_BOTH")
+                .build());
+
+        List<InlineKeyboardButton> row3 = new ArrayList<>();
+        row3.add(InlineKeyboardButton.builder()
                 .text(CallbackType.HOME.getButtonText())
                 .callbackData(CallbackType.HOME.toString())
                 .build());
 
         return InlineKeyboardMarkup.builder()
-                .keyboard(List.of(row1, row2))
+                .keyboard(List.of(row1, row2, row3))
                 .build();
     }
 

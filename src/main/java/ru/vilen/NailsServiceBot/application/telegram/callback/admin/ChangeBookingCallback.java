@@ -7,21 +7,23 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import ru.vilen.NailsServiceBot.application.telegram.TelegramBot;
 import ru.vilen.NailsServiceBot.application.telegram.callback.Callback;
 import ru.vilen.NailsServiceBot.application.telegram.callback.CallbackType;
 import ru.vilen.NailsServiceBot.entity.Booking;
 import ru.vilen.NailsServiceBot.service.BookingService;
-import ru.vilen.NailsServiceBot.utils.AdminKeyboardUtils;
 
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class ScheduleCallback implements Callback {
+public class ChangeBookingCallback implements Callback {
     TelegramBot bot;
     BookingService bookingService;
 
@@ -42,47 +44,49 @@ public class ScheduleCallback implements Callback {
         if (bookings.isEmpty()) {
             SendMessage message = SendMessage.builder()
                     .chatId(chatId)
-                    .text("Пока нет активных записей!")
-                    .replyMarkup(AdminKeyboardUtils.buildScheduleInlineKeyboard())
+                    .text("Нет записей")
                     .build();
-
             bot.sendNewMessage(message);
             return;
         }
 
-        StringBuilder sb = new StringBuilder("📅 Все записи:\n\n");
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
 
-        for (Booking book : bookings) {
-            String line = String.format("""
-                Клиент: %s
-                Телефон: @%s
-                Запись: %s (%s)
-                Ссылка: @%s\n
-                """,
-                    book.getUser().getUserName(),
-                    book.getUser().getPhoneNumber(),
-                    book.getBookingTime().format(timeFormatter),
-                    book.getBookingDate().format(dateFormatter),
-                    book.getUser().getUserLink()
-            );
+        List<List<InlineKeyboardButton>> buttons = new ArrayList<>();
 
-            sb.append(line);
+        for (Booking book : bookings) {
+            String formattedDate = book.getBookingDate().format(dateFormatter);
+            String formattedTime = (book.getBookingTime() != null)
+                    ? book.getBookingTime().format(timeFormatter)
+                    : "—";
+
+            String label = String.format("%s — %s (%s)",
+                    book.getUser().getUserName(),
+                    formattedDate,
+                    formattedTime);
+
+            buttons.add(List.of(
+                    InlineKeyboardButton.builder()
+                            .text(label)
+                            .callbackData("SELECT_BOOKING_" + book.getId())
+                            .build()
+            ));
         }
 
-        SendMessage bookingsMessage = SendMessage.builder()
-                .chatId(chatId)
-                .text(sb.toString())
-                .replyMarkup(AdminKeyboardUtils.buildScheduleInlineKeyboard())
+        InlineKeyboardMarkup keyboard = InlineKeyboardMarkup.builder()
+                .keyboard(buttons)
                 .build();
 
-        bot.sendNewMessage(bookingsMessage);
+        bot.sendNewMessage(SendMessage.builder()
+                .chatId(chatId)
+                .text("Выбери запись, которую хочешь изменить:")
+                .replyMarkup(keyboard)
+                .build());
     }
 
     @Override
     public CallbackType getType() {
-        return CallbackType.SCHEDULE;
+        return CallbackType.CHANGE_BOOKING;
     }
 }
-

@@ -10,7 +10,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.vilen.NailsServiceBot.application.telegram.TelegramBot;
 import ru.vilen.NailsServiceBot.application.telegram.callback.Callback;
 import ru.vilen.NailsServiceBot.application.telegram.callback.CallbackType;
-import ru.vilen.NailsServiceBot.entity.Book;
+import ru.vilen.NailsServiceBot.entity.Booking;
 import ru.vilen.NailsServiceBot.repository.BookingRepository;
 import ru.vilen.NailsServiceBot.service.BookingService;
 import ru.vilen.NailsServiceBot.utils.AdminKeyboardUtils;
@@ -41,7 +41,7 @@ public class ScheduleForTodayCallback implements Callback {
         Long chatId = update.getCallbackQuery().getMessage().getChatId();
 
         LocalDate today = LocalDate.now();
-        List<Book> bookings = bookingRepository.findAllByBookingDate(today);
+        List<Booking> bookings = bookingRepository.findAllByBookingDate(today);
 
         if (bookings.isEmpty()) {
             SendMessage message = SendMessage.builder()
@@ -58,7 +58,7 @@ public class ScheduleForTodayCallback implements Callback {
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
 
-        for (Book book : bookings) {
+        for (Booking book : bookings) {
             String line = String.format("""
                 Клиент: %s
                 Телефон: @%s
