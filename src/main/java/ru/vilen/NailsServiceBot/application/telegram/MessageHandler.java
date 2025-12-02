@@ -146,6 +146,20 @@ public class MessageHandler {
             booking.setBookingTime(newTime);
             bookingService.saveBooking(booking);
 
+            SendMessage message = SendMessage.builder()
+                    .chatId(booking.getUser().getChatId())
+                    .text(String.format("⚠\uFE0F Важное обновление по твоей записи!\n" +
+                            "\n" +
+                            "\uD83D\uDCC5 Дата: %s  \n" +
+                            "⏰ Время: %s  \n" +
+                            "✨ Услуга: %s  \n" +
+                            "\n" +
+                            "Мастер изменил время твоей записи.  \n" +
+                            "Если новое время тебе не подходит — напиши мастеру в личные сообщения: @link", bookingService.formatTheDate(booking.getBookingDate()), booking.getBookingTime(), booking.getBookingType().getLabel()))
+                    .build();
+
+            bot.sendNewMessage(message);
+
             user.setUserState(UserStatus.REGISTERED);
             userRepository.save(user);
 

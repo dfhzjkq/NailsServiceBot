@@ -187,6 +187,8 @@ public class ChangeBookingCallback implements Callback {
         booking.setBookingDate(newDate);
         bookingService.saveBooking(booking);
 
+        sendNotificationToUser(booking);
+
         bot.sendNewMessage(
                 SendMessage.builder()
                         .chatId(chatId)
@@ -234,11 +236,29 @@ public class ChangeBookingCallback implements Callback {
         booking.setBookingType(BookingType.valueOf(p[2]));
         bookingService.saveBooking(booking);
 
+        sendNotificationToUser(booking);
+
         bot.sendNewMessage(
                 SendMessage.builder()
                         .chatId(chatId)
                         .text("Тип успешно изменен!")
                         .build()
         );
+    }
+
+    private void sendNotificationToUser(Booking booking) {
+        SendMessage message = SendMessage.builder()
+                .chatId(booking.getUser().getChatId())
+                .text(String.format("⚠\uFE0F Важное обновление по твоей записи!\n" +
+                        "\n" +
+                        "\uD83D\uDCC5 Дата: %s  \n" +
+                        "⏰ Время: %s  \n" +
+                        "✨ Услуга: %s  \n" +
+                        "\n" +
+                        "Мастер изменил время твоей записи.  \n" +
+                        "Если новое время тебе не подходит — напиши мастеру в личные сообщения: @link", bookingService.formatTheDate(booking.getBookingDate()), booking.getBookingTime(), booking.getBookingType().getLabel()))
+                .build();
+
+        bot.sendNewMessage(message);
     }
 }
