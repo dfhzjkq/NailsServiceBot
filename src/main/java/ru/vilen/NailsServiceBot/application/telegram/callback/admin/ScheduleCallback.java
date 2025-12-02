@@ -11,9 +11,11 @@ import ru.vilen.NailsServiceBot.application.telegram.TelegramBot;
 import ru.vilen.NailsServiceBot.application.telegram.callback.Callback;
 import ru.vilen.NailsServiceBot.application.telegram.callback.CallbackType;
 import ru.vilen.NailsServiceBot.entity.Booking;
+import ru.vilen.NailsServiceBot.entity.BookingStatus;
 import ru.vilen.NailsServiceBot.service.BookingService;
 import ru.vilen.NailsServiceBot.utils.AdminKeyboardUtils;
 
+import java.time.Duration;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -37,7 +39,10 @@ public class ScheduleCallback implements Callback {
 
         Long chatId = update.getCallbackQuery().getMessage().getChatId();
 
-        List<Booking> bookings = bookingService.getAllBookings();
+        List<Booking> bookings = bookingService.getAllBookings().stream()
+                .filter(b -> b.getBookingTime() != null)
+                .filter(b -> b.getStatus() == BookingStatus.CONFIRMED)
+                .toList();
 
         if (bookings.isEmpty()) {
             SendMessage message = SendMessage.builder()
@@ -55,17 +60,29 @@ public class ScheduleCallback implements Callback {
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
 
         for (Booking book : bookings) {
+
+            Duration duration = book.getBookingType().getDuration();
+            String procedure = book.getBookingType().getLabel();
+
+            String start = book.getBookingTime().format(timeFormatter);
+            String end = book.getBookingTime().plus(duration).format(timeFormatter);
+
             String line = String.format("""
-                Клиент: %s
-                Телефон: @%s
-                Запись: %s (%s)
-                Ссылка: @%s\n
-                """,
-                    book.getUser().getUserName(),
-                    book.getUser().getPhoneNumber(),
-                    book.getBookingTime().format(timeFormatter),
-                    book.getBookingDate().format(dateFormatter),
-                    book.getUser().getUserLink()
+            <blockquote>%s</blockquote>
+            <b>%s — %s</b>
+            Клиент: %s
+            Телефон: <code>%s</code>
+            Услуга: %s
+            Ссылка: @%s
+
+            """,
+                book.getBookingDate().format(dateFormatter),
+                start,
+                end,
+                book.getUser().getUserName(),
+                book.getUser().getPhoneNumber(),
+                procedure,
+                book.getUser().getUserLink()
             );
 
             sb.append(line);
@@ -75,6 +92,7 @@ public class ScheduleCallback implements Callback {
                 .chatId(chatId)
                 .text(sb.toString())
                 .replyMarkup(AdminKeyboardUtils.buildScheduleInlineKeyboard())
+                .parseMode("HTML")
                 .build();
 
         bot.sendNewMessage(bookingsMessage);

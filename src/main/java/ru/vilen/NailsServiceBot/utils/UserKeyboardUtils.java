@@ -2,7 +2,10 @@ package ru.vilen.NailsServiceBot.utils;
 
 import lombok.experimental.UtilityClass;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import ru.vilen.NailsServiceBot.application.telegram.callback.CallbackType;
 import ru.vilen.NailsServiceBot.entity.BookingType;
 
@@ -15,9 +18,11 @@ import java.util.List;
 @UtilityClass
 public class UserKeyboardUtils {
 
-    /*public static ReplyKeyboardMarkup buildMainReplyKeyboard() {
+    public static ReplyKeyboardMarkup buildMainReplyKeyboard() {
         KeyboardRow row1 = new KeyboardRow();
-        row1.add(KeyboardButton.builder().text("\t\uD83D\uDCDE Отправить телефон ").build());
+        row1.add(KeyboardButton.builder()
+                .text("\t\uD83D\uDCDE Отправить телефон ")
+                .build());
 
         return ReplyKeyboardMarkup.builder()
                 .keyboardRow(row1)
@@ -25,7 +30,7 @@ public class UserKeyboardUtils {
                 .selective(false)
                 .isPersistent(true)
                 .build();
-    }*/
+    }
 
     public static InlineKeyboardMarkup buildMenuInlineKeyboard() {
         List<InlineKeyboardButton> row1 = new ArrayList<>();
@@ -34,15 +39,20 @@ public class UserKeyboardUtils {
                 .callbackData(CallbackType.BOOK.toString())
                 .build());
 
-        List<InlineKeyboardButton> row2 = new ArrayList<>();
-        row2.add(InlineKeyboardButton.builder()
+        row1.add(InlineKeyboardButton.builder()
                 .text(CallbackType.MY.getButtonText())
                 .callbackData(CallbackType.MY.toString())
                 .build());
 
+        List<InlineKeyboardButton> row2 = new ArrayList<>();
         row2.add(InlineKeyboardButton.builder()
                 .text(CallbackType.SETTINGS.getButtonText())
                 .callbackData(CallbackType.SETTINGS.toString())
+                .build());
+
+        row2.add(InlineKeyboardButton.builder()
+                .text(CallbackType.HELP.getButtonText())
+                .callbackData(CallbackType.HELP.toString())
                 .build());
 
         return InlineKeyboardMarkup.builder()

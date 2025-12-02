@@ -41,7 +41,6 @@ public class RejectCallback implements Callback {
         bot.sendNewMessage(SendMessage.builder()
                 .chatId(chatId)
                 .text("❌ Запись отклонена!")
-                .replyMarkup(AdminKeyboardUtils.buildMenuInlineKeyboard())
                 .build());
     }
 

@@ -10,7 +10,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public enum CommandType {
 
-    START("/start", "Запуск бота");
+    START("/start", "Перезапустить бота");
 
     String name;
     String description;

@@ -55,7 +55,7 @@ public class MyCallback implements Callback {
             return;
         }
 
-        String date = book.getBookingDate().toString();
+        String date = bookingService.formatTheDate(book.getBookingDate());
         String time = book.getBookingTime().toString();
 
         SendMessage message = SendMessage.builder()

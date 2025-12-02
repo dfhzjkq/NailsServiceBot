@@ -6,6 +6,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import ru.vilen.NailsServiceBot.entity.Booking;
 import ru.vilen.NailsServiceBot.entity.User;
 import ru.vilen.NailsServiceBot.entity.UserStatus;
 import ru.vilen.NailsServiceBot.repository.UserRepository;
@@ -30,6 +31,12 @@ public class MessageHandler {
     public void handle(Update update) {
         String text = update.getMessage().getText().trim();
         Long chatId = update.getMessage().getChatId();
+
+        if (userService.isAdmin(chatId)) {
+            adminMessageHandler(text);
+            return;
+        }
+
         User user = userService.getOrCreateUser(chatId);
         UserStatus userState = user.getUserState();
 
@@ -39,9 +46,11 @@ public class MessageHandler {
 
                 SendMessage askPhone = SendMessage.builder()
                         .chatId(chatId)
-                        .text("\uD83D\uDCDE Отлично!  \n" +
+                        .text("Отлично!  \n" +
                                 "Теперь напиши, пожалуйста, свой номер телефона \uD83D\uDC85  \n" +
-                                "(Просто отправь цифры, например: 89991234567)")
+                                "(Просто отправь цифры, например: 89991234567)" +
+                                "\uD83D\uDCDE Это нужно для связи с мастером на случай вопросов или изменений.  \n" +
+                                "⚠\uFE0F Пожалуйста, перепроверь номер перед отправкой.")
                         .build();
                 bot.sendNewMessage(askPhone);
             }
@@ -117,6 +126,39 @@ public class MessageHandler {
                         .build();
                 bot.sendNewMessage(successMessage);
             }
+        }
+    }
+
+    public void adminMessageHandler(String text) {
+        try {
+            User user = userService.getUserByStatus(UserStatus.WAITING_NEW_TIME);
+            if (user == null) {
+                return;
+            }
+
+            Booking booking = bookingService.getActiveBooking(user.getChatId());
+            if (booking == null) {
+                return;
+            }
+
+            LocalTime newTime = LocalTime.parse(text);
+
+            booking.setBookingTime(newTime);
+            bookingService.saveBooking(booking);
+
+            user.setUserState(UserStatus.REGISTERED);
+            userRepository.save(user);
+
+            bot.sendNewMessage(SendMessage.builder()
+                    .chatId(userService.getAdminChatId())
+                    .text("✅ Время успешно изменено!\nНовое время: " + newTime)
+                    .build());
+
+        } catch (DateTimeParseException e) {
+            bot.sendNewMessage(SendMessage.builder()
+                    .chatId(userService.getAdminChatId())
+                    .text("⏰ Неверный формат времени! Введите, например: 15:30")
+                    .build());
         }
     }
 }

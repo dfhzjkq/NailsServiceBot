@@ -13,80 +13,232 @@ import ru.vilen.NailsServiceBot.application.telegram.TelegramBot;
 import ru.vilen.NailsServiceBot.application.telegram.callback.Callback;
 import ru.vilen.NailsServiceBot.application.telegram.callback.CallbackType;
 import ru.vilen.NailsServiceBot.entity.Booking;
+import ru.vilen.NailsServiceBot.entity.BookingType;
+import ru.vilen.NailsServiceBot.entity.User;
+import ru.vilen.NailsServiceBot.entity.UserStatus;
 import ru.vilen.NailsServiceBot.service.BookingService;
+import ru.vilen.NailsServiceBot.service.UserService;
+import ru.vilen.NailsServiceBot.utils.AdminKeyboardUtils;
 
+import java.time.LocalDate;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
+@Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ChangeBookingCallback implements Callback {
+
     TelegramBot bot;
     BookingService bookingService;
-
-    @Override
-    public void apply(Update update) {
-        Long userId = update.getCallbackQuery().getFrom().getId();
-        String userName = update.getCallbackQuery().getFrom().getUserName();
-        log.info("[{}] Callback {} от пользователя {} [id{}]",
-                update.getUpdateId(),
-                getType(),
-                userName,
-                userId);
-
-        Long chatId = update.getCallbackQuery().getMessage().getChatId();
-
-        List<Booking> bookings = bookingService.getAllBookings();
-
-        if (bookings.isEmpty()) {
-            SendMessage message = SendMessage.builder()
-                    .chatId(chatId)
-                    .text("Нет записей")
-                    .build();
-            bot.sendNewMessage(message);
-            return;
-        }
-
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
-
-        List<List<InlineKeyboardButton>> buttons = new ArrayList<>();
-
-        for (Booking book : bookings) {
-            String formattedDate = book.getBookingDate().format(dateFormatter);
-            String formattedTime = (book.getBookingTime() != null)
-                    ? book.getBookingTime().format(timeFormatter)
-                    : "—";
-
-            String label = String.format("%s — %s (%s)",
-                    book.getUser().getUserName(),
-                    formattedDate,
-                    formattedTime);
-
-            buttons.add(List.of(
-                    InlineKeyboardButton.builder()
-                            .text(label)
-                            .callbackData("SELECT_BOOKING_" + book.getId())
-                            .build()
-            ));
-        }
-
-        InlineKeyboardMarkup keyboard = InlineKeyboardMarkup.builder()
-                .keyboard(buttons)
-                .build();
-
-        bot.sendNewMessage(SendMessage.builder()
-                .chatId(chatId)
-                .text("Выбери запись, которую хочешь изменить:")
-                .replyMarkup(keyboard)
-                .build());
-    }
+    UserService userService;
 
     @Override
     public CallbackType getType() {
         return CallbackType.CHANGE_BOOKING;
+    }
+
+    @Override
+    public void apply(Update update) {
+
+        String data = update.getCallbackQuery().getData();
+        Long chatId = update.getCallbackQuery().getMessage().getChatId();
+
+        log.debug("[CHANGE_BOOKING] data={}", data);
+
+        if (data.startsWith("SELECT_BOOKING_")) {
+            handleSelectBooking(data, chatId);
+            return;
+        }
+
+        if (data.startsWith("CHANGE_DATE_")) {
+            handleStartChangeDate(data, chatId);
+            return;
+        }
+
+        if (data.startsWith("ADMIN_CAL_PREV_")) {
+            handleCalendarPrev(data, chatId);
+            return;
+        }
+
+        if (data.startsWith("ADMIN_CAL_NEXT_")) {
+            handleCalendarNext(data, chatId);
+            return;
+        }
+
+        if (data.startsWith("SET_NEW_DATE_")) {
+            handleApplyNewDate(data, chatId);
+            return;
+        }
+
+        if (data.startsWith("CHANGE_TIME_")) {
+            handleChangeTime(data, chatId);
+            return;
+        }
+
+        if (data.startsWith("CHANGE_TYPE_")) {
+            handleStartChangeType(data, chatId);
+            return;
+        }
+
+        if (data.startsWith("ADMIN_TYPE_")) {
+            handleApplyNewType(data, chatId);
+            return;
+        }
+
+        showBookingList(chatId);
+    }
+
+    private void showBookingList(Long chatId) {
+        List<Booking> bookings = bookingService.getAllBookings();
+        DateTimeFormatter df = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        DateTimeFormatter tf = DateTimeFormatter.ofPattern("HH:mm");
+
+        List<List<InlineKeyboardButton>> rows = new ArrayList<>();
+
+        for (Booking b : bookings) {
+            String time = b.getBookingTime() == null ? "—" : b.getBookingTime().format(tf);
+            String text = "%s — %s (%s)".formatted(
+                    b.getUser().getUserName(),
+                    b.getBookingDate().format(df),
+                    time
+            );
+
+            rows.add(List.of(
+                    InlineKeyboardButton.builder()
+                            .text(text)
+                            .callbackData("SELECT_BOOKING_" + b.getId())
+                            .build()
+            ));
+        }
+
+        bot.sendNewMessage(
+                SendMessage.builder()
+                        .chatId(chatId)
+                        .text("Выбери запись, для которой хочешь изменить дату:")
+                        .replyMarkup(InlineKeyboardMarkup.builder().keyboard(rows).build())
+                        .build()
+        );
+    }
+
+    private void handleSelectBooking(String data, Long chatId) {
+        Long bookingId = Long.parseLong(data.substring("SELECT_BOOKING_".length()));
+
+        bot.sendNewMessage(SendMessage.builder()
+                .chatId(chatId)
+                .text("Что хотите сделать?")
+                .replyMarkup(AdminKeyboardUtils.buildChangeBookingActionKeyboard(bookingId))
+                .build());
+    }
+
+    private void handleStartChangeDate(String data, Long chatId) {
+        Long bookingId = Long.parseLong(data.substring("CHANGE_DATE_".length()));
+
+        bot.sendNewMessage(
+                SendMessage.builder()
+                        .chatId(chatId)
+                        .text("Выберите новую дату для записи:")
+                        .replyMarkup(AdminKeyboardUtils.buildCalendar(bookingId, LocalDate.now()))
+                        .build()
+        );
+    }
+
+    private void handleCalendarPrev(String data, Long chatId) {
+        // ADMIN_CAL_PREV_<bookingId>_<yyyy-MM>
+        String[] p = data.split("_");
+        Long bookingId = Long.parseLong(p[3]);
+        YearMonth ym = YearMonth.parse(p[4]);
+
+        LocalDate newMonth = ym.minusMonths(1).atDay(1);
+
+        bot.sendNewMessage(SendMessage.builder()
+                .chatId(chatId)
+                .text("Выберите новую дату:")
+                .replyMarkup(AdminKeyboardUtils.buildCalendar(bookingId, newMonth))
+                .build());
+    }
+
+    private void handleCalendarNext(String data, Long chatId) {
+        // ADMIN_CAL_NEXT_<bookingId>_<yyyy-MM>
+        String[] p = data.split("_");
+        Long bookingId = Long.parseLong(p[3]);
+        YearMonth ym = YearMonth.parse(p[4]);
+
+        LocalDate newMonth = ym.plusMonths(1).atDay(1);
+
+        bot.sendNewMessage(SendMessage.builder()
+                .chatId(chatId)
+                .text("Выберите новую дату:")
+                .replyMarkup(AdminKeyboardUtils.buildCalendar(bookingId, newMonth))
+                .build());
+    }
+
+    private void handleApplyNewDate(String data, Long chatId) {
+        // SET_NEW_DATE_<bookingId>_<yyyy-MM-dd>
+        String[] p = data.split("_");
+
+        Long bookingId = Long.parseLong(p[3]);
+        LocalDate newDate = LocalDate.parse(p[4]);
+
+        Booking booking = bookingService.getBookingById(bookingId);
+        booking.setBookingDate(newDate);
+        bookingService.saveBooking(booking);
+
+        bot.sendNewMessage(
+                SendMessage.builder()
+                        .chatId(chatId)
+                        .text("Дата успешно изменена!")
+                        .build()
+        );
+    }
+
+    private void handleChangeTime(String data, Long chatId) {
+        String[] p = data.split("_");
+
+        Long bookingId = Long.parseLong(p[2]);
+        Booking booking = bookingService.getBookingById(bookingId);
+        User user = booking.getUser();
+
+        user.setUserState(UserStatus.WAITING_NEW_TIME);
+        userService.saveUser(user);
+
+        bot.sendNewMessage(
+                SendMessage.builder()
+                        .chatId(chatId)
+                        .text("Введите новое время")
+                        .build()
+        );
+    }
+
+    private void handleStartChangeType(String data, Long chatId) {
+        Long bookingId = Long.parseLong(data.substring("CHANGE_TYPE_".length()));
+
+        bot.sendNewMessage(
+                SendMessage.builder()
+                        .chatId(chatId)
+                        .text("Выберите тип услуги:")
+                        .replyMarkup(AdminKeyboardUtils.buildChangeTypeInlineKeyboard(bookingId))
+                        .build()
+        );
+    }
+
+    private void handleApplyNewType(String data, Long chatId) {
+        String[] p = data.split("_");
+
+        Long bookingId = Long.parseLong(p[3]);
+        Booking booking = bookingService.getBookingById(bookingId);
+
+        booking.setBookingType(BookingType.valueOf(p[2]));
+        bookingService.saveBooking(booking);
+
+        bot.sendNewMessage(
+                SendMessage.builder()
+                        .chatId(chatId)
+                        .text("Тип успешно изменен!")
+                        .build()
+        );
     }
 }

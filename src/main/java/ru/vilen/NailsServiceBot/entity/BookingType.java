@@ -1,23 +1,29 @@
 package ru.vilen.NailsServiceBot.entity;
 
+import java.time.Duration;
+
 public enum BookingType {
-    MANICURE("💅 Маникюр", 2),
-    PEDICURE("🦶 Педикюр", 2),
-    BOTH("💅🦶 Маникюр и педикюр", 4);
+    MANICURE("💅 Маникюр", 120),
+    PEDICURE("🦶 Педикюр", 120),
+    BOTH("💅🦶 Маникюр и педикюр", 210);
 
     private final String label;
-    private final int duration;
+    private final int durationMinutes;
 
-    BookingType(String label, int duration) {
+    BookingType(String label, int durationMinutes) {
         this.label = label;
-        this.duration = duration;
+        this.durationMinutes = durationMinutes;
     }
 
     public String getLabel() {
         return label;
     }
 
-    public int getDuration() {
-        return duration;
+    public int getDurationMinutes() {
+        return durationMinutes;
+    }
+
+    public Duration getDuration() {
+        return Duration.ofMinutes(durationMinutes);
     }
 }

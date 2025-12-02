@@ -3,6 +3,8 @@ package ru.vilen.NailsServiceBot.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -37,7 +39,7 @@ public class Booking {
     @Column(name = "status")
     BookingStatus status;
 
-    public int getDuration() {
-        return bookingType != null ? bookingType.getDuration() : 0;
+    public Duration getDuration() {
+        return bookingType != null ? bookingType.getDuration() : Duration.ZERO;
     }
 }

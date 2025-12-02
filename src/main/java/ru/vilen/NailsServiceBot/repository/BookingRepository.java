@@ -5,6 +5,7 @@ import org.springframework.stereotype.Repository;
 import ru.vilen.NailsServiceBot.entity.Booking;
 import ru.vilen.NailsServiceBot.entity.BookingStatus;
 import ru.vilen.NailsServiceBot.entity.User;
+import ru.vilen.NailsServiceBot.entity.UserStatus;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -27,4 +28,6 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     Optional<Booking> findFirstByUserChatId(Long chatId);
 
     List<Booking> findAllByBookingDateAndBookingTimeIsNotNull(LocalDate date);
+
+    Optional<Booking> findFirstByUser_UserState(UserStatus userStatus);
 }

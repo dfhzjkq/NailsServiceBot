@@ -7,5 +7,6 @@ public enum UserStatus {
     REGISTERED,
     WAITING_BOOK,
     WAITING_NEW_NAME,
-    WAITING_NEW_PHONE;
+    WAITING_NEW_PHONE,
+    WAITING_NEW_TIME;
 }

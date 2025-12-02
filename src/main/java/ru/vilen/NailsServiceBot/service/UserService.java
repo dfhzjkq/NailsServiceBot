@@ -81,7 +81,20 @@ public class UserService {
         return chatId.equals(adminChatId);
     }
 
+    public Long getAdminChatId() {
+        return adminChatId;
+    }
+
     public List<User> getAllUsers() {
         return userRepository.findAll(Sort.by("userName").ascending());
+    }
+
+    public void saveUser(User user) {
+        userRepository.save(user);
+    }
+
+    public User getUserByStatus(UserStatus userStatus) {
+        return userRepository.findFirstByUserState(userStatus)
+                .orElse(null);
     }
 }

@@ -85,7 +85,7 @@ public class DateCallback implements Callback {
             user.setUserState(UserStatus.WAITING_BOOK);
             userRepository.save(user);
 
-            List<String> intervals = bookingService.getAvailableIntervals(date);
+            List<String> intervals = bookingService.getAvailableIntervals(chatId, date);
             String availableText = intervals.isEmpty()
                     ? "К сожалению, на этот день свободных окон нет 😔"
                     : intervals.stream().map(i -> "🕒 " + i).collect(Collectors.joining("\n"));
@@ -95,10 +95,13 @@ public class DateCallback implements Callback {
                     .text(String.format("""
                         📅 Ты выбрал дату: %s
                         
-                        Вот доступные промежутки для записи:
+                        Вот доступные промежутки, когда можно начать запись:
                         %s
                         
-                        ⚠️ Укажи время вручную сообщением (например: 09:00)
+                        ✍️ Отправь мне время сообщением — просто напиши, во сколько хочешь прийти.
+                        Например: 09:30, 15:00, 09:45.
+                            
+                        Я проверю время и сразу создам запись.
                         """, formattedDate, availableText))
                     .build();
 

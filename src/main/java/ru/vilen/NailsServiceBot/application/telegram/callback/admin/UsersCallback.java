@@ -56,8 +56,8 @@ public class UsersCallback implements Callback {
             if (user.getRole() != UserRole.ADMIN) {
                 String line = String.format("""
                 Имя: %s
-                Телефон: @%s
-                Id: @%d
+                Телефон: <code>%s</code>
+                Id: <code>%d</code>
                 Ссылка: @%s\n
                 """,
                         user.getUserName(),
@@ -74,6 +74,7 @@ public class UsersCallback implements Callback {
                 .chatId(chatId)
                 .text(sb.toString())
                 .replyMarkup(AdminKeyboardUtils.buildUsersInlineKeyboard())
+                .parseMode("HTML")
                 .build();
 
         bot.sendNewMessage(bookingsMessage);

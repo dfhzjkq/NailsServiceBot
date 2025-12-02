@@ -10,14 +10,12 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import ru.vilen.NailsServiceBot.application.telegram.TelegramBot;
-import ru.vilen.NailsServiceBot.entity.Booking;
-import ru.vilen.NailsServiceBot.entity.BookingStatus;
-import ru.vilen.NailsServiceBot.entity.BookingType;
-import ru.vilen.NailsServiceBot.entity.User;
+import ru.vilen.NailsServiceBot.entity.*;
 import ru.vilen.NailsServiceBot.repository.BookingRepository;
 import ru.vilen.NailsServiceBot.repository.UserRepository;
 import ru.vilen.NailsServiceBot.utils.AdminKeyboardUtils;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -73,6 +71,7 @@ public class BookingService {
     }
 
     public void saveBookingTime(Long chatId, LocalTime time) {
+
         Booking booking = bookingRepository.findFirstByUserChatIdAndStatus(chatId, BookingStatus.WAITING_TIME)
                 .orElseThrow(() -> new IllegalStateException("Сначала нужно выбрать дату"));
 
@@ -82,25 +81,66 @@ public class BookingService {
 
         if (existingBooking != null) {
             deleteBookingById(existingBooking.getId());
+
             bot.sendNewMessage(SendMessage.builder()
                     .chatId(chatId)
                     .text("""
-                    ⚠️ Твоя предыдущая запись была отменена, чтобы освободить место для новой.\n
-                    📅 Не переживай! Я уже сохранил новую дату и время 💖
-                    """)
+                ⚠️ Твоя предыдущая запись была отменена, чтобы освободить место для новой.
+
+                📅 Не переживай! Я уже сохранил новую дату и время 💖
+                """)
+                    .build());
+
+            bot.sendNewMessage(SendMessage.builder()
+                    .chatId(adminChatId)
+                    .text(String.format("Клиент %s отменил запись на %s(%s)",
+                            existingBooking.getUser().getUserName(),
+                            existingBooking.getBookingTime(),
+                            formatTheDate(existingBooking.getBookingDate())))
                     .build());
         }
 
-        if (bookingRepository.existsByBookingDateAndBookingTime(booking.getBookingDate(), time)) {
-            log.warn("Время [{}] уже занято", time);
-            throw new IllegalStateException("Это время уже занято!");
+    /* ======================================================
+       УЧЁТ НОВОЙ ДЛИТЕЛЬНОСТИ В МИНУТАХ
+       ====================================================== */
+
+        Duration newDur = booking.getBookingType().getDuration(); // теперь Duration
+        LocalTime newStart = time;
+        LocalTime newEnd = time.plus(newDur);
+
+        // получаем все записи, которые должны учитываться
+        List<Booking> existing = bookingRepository.findAllByBookingDate(booking.getBookingDate())
+                .stream()
+                .filter(b -> b.getBookingTime() != null)
+                .filter(b -> List.of(BookingStatus.PENDING, BookingStatus.CONFIRMED)
+                        .contains(b.getStatus()))
+                .toList();
+
+        // проверяем пересечения
+        for (Booking b : existing) {
+
+            Duration dur = b.getBookingType().getDuration(); // Duration
+            LocalTime start = b.getBookingTime();
+            LocalTime end = start.plus(dur);
+
+            boolean overlap = newStart.isBefore(end) && newEnd.isAfter(start);
+
+            if (overlap) {
+                throw new IllegalStateException("Время пересекается с другой записью!");
+            }
         }
+
+    /* ======================================================
+       СОХРАНЕНИЕ ЗАПИСИ
+       ====================================================== */
 
         booking.setBookingTime(time);
         booking.setStatus(BookingStatus.PENDING);
         bookingRepository.save(booking);
 
-        log.info("Создана полная запись chatId[{}], date[{}], time[{}]", chatId, booking.getBookingDate(), time);
+        log.info("Создана полная запись chatId[{}], date[{}], time[{}]",
+                chatId, booking.getBookingDate(), time);
+
         sendBookingNotificationToAdmin(booking);
     }
 
@@ -117,7 +157,19 @@ public class BookingService {
             booking.setStatus(BookingStatus.CANCELLED);
             deleteBookingById(booking.getId());
 //                bookingRepository.save(booking);
+
+            SendMessage message = SendMessage.builder()
+                    .chatId(adminChatId)
+                    .text(String.format("Клиент %s отменил запись на %s(%s)",
+                            booking.getUser().getUserName(),
+                            booking.getBookingTime(),
+                            formatTheDate(booking.getBookingDate())))
+                    .build();
+
+            bot.sendNewMessage(message);
         });
+
+
     }
 
     public void clearUnfinishedBooking(Long chatId) {
@@ -133,41 +185,85 @@ public class BookingService {
     }
 
     private void sendBookingNotificationToAdmin(Booking booking) {
+        LocalDate date = booking.getBookingDate();
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-        String formattedDate = booking.getBookingDate().format(dateFormatter);
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
 
-        String userName = booking.getUser().getUserName();
-        Long chatId = booking.getUser().getChatId();
+        // Берём только подтверждённые записи с временем
+        List<Booking> confirmedBookings = bookingRepository.findAllByBookingDate(date)
+                .stream()
+                .filter(b -> b.getStatus() == BookingStatus.CONFIRMED)
+                .filter(b -> b.getBookingTime() != null)
+                .sorted(Comparator.comparing(Booking::getBookingTime))
+                .toList();
 
+        StringBuilder schedule = new StringBuilder("📅 Подтверждённые записи на " + date.format(dateFormatter) + ":\n\n");
 
-
-        String userLink;
-        if (userName != null && !userName.isBlank()) {
-            userLink = String.format("<a href=\"https://t.me/%s\">@%s</a>", userName, userName);
+        if (confirmedBookings.isEmpty()) {
+            schedule.append("Нет подтверждённых записей.\n\n");
         } else {
-            userLink = String.format("<a href=\"tg://user?id=%d\">Профиль пользователя</a>", chatId);
+            for (Booking b : confirmedBookings) {
+
+                Duration duration = b.getBookingType().getDuration(); // теперь Duration
+                String procedure = b.getBookingType().getLabel();
+
+                LocalTime startTime = b.getBookingTime();
+                LocalTime endTime = startTime.plus(duration); // <-- ключевое изменение
+
+                String start = startTime.format(timeFormatter);
+                String end = endTime.format(timeFormatter);
+
+                schedule.append(String.format("""
+                    <blockquote>%s</blockquote>
+                    <b>%s — %s</b>
+                    Клиент: %s
+                    Телефон: <code>%s</code>
+                    Услуга: %s
+                    Ссылка: @%s
+        
+                    """,
+                    b.getBookingDate().format(dateFormatter),
+                    start,
+                    end,
+                    b.getUser().getUserName(),
+                    b.getUser().getPhoneNumber(),
+                    procedure,
+                    b.getUser().getUserLink()
+                ));
+            }
         }
+
+        // Отправляем расписание
+        bot.sendNewMessage(SendMessage.builder()
+                .chatId(adminChatId)
+                .text(schedule.toString())
+                .parseMode("HTML")
+                .build());
+
+
+        // Отдельное сообщение — новая запись (PENDING)
         String text = String.format("""
-            Новая запись!
-            Клиент: %s
-            Телефон: %s
-            Запись: %s (%s)
-            @%s
-            """,
-                userName,
+        <b>Новая запись!</b>
+        Клиент: %s
+        Телефон: <code>%s</code>
+        Услуга: %s
+        Время: %s (%s)
+        Ссылка: @%s
+        """,
+                booking.getUser().getUserName(),
                 booking.getUser().getPhoneNumber(),
-                booking.getBookingTime(),
-                formattedDate,
+                booking.getBookingType().getLabel(),
+                booking.getBookingTime().format(timeFormatter),
+                date.format(dateFormatter),
                 booking.getUser().getUserLink()
         );
 
-        SendMessage message = SendMessage.builder()
+        bot.sendNewMessage(SendMessage.builder()
                 .chatId(adminChatId)
                 .text(text)
                 .replyMarkup(AdminKeyboardUtils.buildDecisionInlineKeyboard(booking.getId()))
-                .build();
-
-        bot.sendNewMessage(message);
+                .parseMode("HTML")
+                .build());
     }
 
     public void confirmBooking(Long bookingId) {
@@ -177,7 +273,7 @@ public class BookingService {
 
             bot.sendNewMessage(SendMessage.builder()
                     .chatId(booking.getUser().getChatId())
-                    .text("✅ Ваша запись подтверждена!\n📅 " + booking.getBookingDate() + " ⏰ " + booking.getBookingTime())
+                    .text("✅ Ваша запись подтверждена!\n📅 " + formatTheDate(booking.getBookingDate()) + " ⏰ " + booking.getBookingTime())
                     .build());
         });
     }
@@ -203,41 +299,104 @@ public class BookingService {
         }
     }
 
-    public List<String> getAvailableIntervals(LocalDate date) {
-        List<Booking> bookings = bookingRepository.findAllByBookingDateAndBookingTimeIsNotNull(date);
-        bookings.sort(Comparator.comparing(Booking::getBookingTime));
+    public List<String> getAvailableIntervals(Long chatId, LocalDate date) {
 
-        LocalTime start = LocalTime.of(9, 0);
-        LocalTime end = LocalTime.of(22, 0);
+        Booking waiting = bookingRepository.findFirstByUserChatIdAndStatus(chatId, BookingStatus.WAITING_TIME)
+                .orElse(null);
 
-        List<String> freeIntervals = new ArrayList<>();
+        Duration required = waiting != null && waiting.getBookingType() != null
+                ? waiting.getBookingType().getDuration()
+                : Duration.ZERO;
 
-        if (bookings.isEmpty()) {
-            freeIntervals.add(String.format("%s-%s", start, end));
-            return freeIntervals;
+        List<Booking> bookings = bookingRepository
+                .findAllByBookingDateAndBookingTimeIsNotNull(date).stream()
+                .sorted(Comparator.comparing(Booking::getBookingTime))
+                .toList();
+
+        LocalTime dayStart = LocalTime.of(9, 0);
+        LocalTime dayEnd = LocalTime.of(22, 0);
+
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("HH:mm");
+
+        // структура для хранения занятости
+        record Interval(LocalTime start, LocalTime end) {}
+
+        /* ---------------- ЗАНЯТЫЕ ИНТЕРВАЛЫ ---------------- */
+        List<Interval> busy = new ArrayList<>();
+        for (Booking b : bookings) {
+            Duration dur = b.getBookingType().getDuration(); // duration теперь в минутах
+            busy.add(new Interval(
+                    b.getBookingTime(),
+                    b.getBookingTime().plus(dur)
+            ));
         }
 
-        LocalTime startOfFirstBooking = bookings.get(0).getBookingTime();
+        /* ---------------- СВОБОДНЫЕ ОКНА ---------------- */
+        List<Interval> free = new ArrayList<>();
 
-        if (start.plusHours(2).isBefore(startOfFirstBooking)) {
-            freeIntervals.add(String.format("%s-%s", start, startOfFirstBooking.minusHours(2)));
-        }
+        if (busy.isEmpty()) {
+            free.add(new Interval(dayStart, dayEnd));
+        } else {
+            // окно до первой записи
+            if (dayStart.isBefore(busy.get(0).start)) {
+                free.add(new Interval(dayStart, busy.get(0).start));
+            }
 
-        for (int i = 0; i < bookings.size() - 1; i++) {
-            LocalTime endCurrent = bookings.get(i).getBookingTime().plusHours(2);
-            LocalTime nextStart = bookings.get(i + 1).getBookingTime();
+            // промежутки между
+            for (int i = 0; i < busy.size() - 1; i++) {
+                LocalTime gapStart = busy.get(i).end;
+                LocalTime gapEnd = busy.get(i + 1).start;
+                if (gapStart.isBefore(gapEnd)) {
+                    free.add(new Interval(gapStart, gapEnd));
+                }
+            }
 
-            if (endCurrent.plusHours(2).isBefore(nextStart)) {
-                freeIntervals.add(String.format("%s-%s", endCurrent, nextStart.minusHours(2)));
+            // окно после последней записи
+            if (busy.get(busy.size() - 1).end.isBefore(dayEnd)) {
+                free.add(new Interval(busy.get(busy.size() - 1).end, dayEnd));
             }
         }
 
-        LocalTime endOfLastBooking = bookings.get(bookings.size() - 1).getBookingTime().plusHours(2);
+        /* ---------------- ПРЕОБРАЗУЕМ СВОБОДНЫЕ ОКНА В ДОСТУПНЫЕ СТАРТОВЫЕ ВРЕМЕНА ---------------- */
+        List<String> intervals = new ArrayList<>();
 
-        if (endOfLastBooking.plusHours(2).isBefore(end)) {
-            freeIntervals.add(String.format("%s-%s", endOfLastBooking, end.minusHours(2)));
+        for (Interval gap : free) {
+
+            // позднейшее возможное начало
+            LocalTime latestStart = gap.end.minus(required);
+
+            if (!gap.start.isAfter(latestStart)) {
+                String s = gap.start.format(fmt);
+                String e = latestStart.format(fmt);
+
+                if (s.equals(e)) {
+                    intervals.add(s);        // один вариант
+                } else {
+                    intervals.add(s + " — " + e);
+                }
+            }
         }
 
-        return freeIntervals;
+        return intervals;
     }
+
+    public String formatTheDate(LocalDate date) {
+        return date.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+    }
+
+    public Booking getBookingById(Long id) {
+        return bookingRepository.findById(id)
+                .orElseThrow(() -> new IllegalStateException("Запись не найдена"));
+    }
+
+    public void saveBooking(Booking booking) {
+        bookingRepository.save(booking);
+    }
+
+    public Booking getBookingByUserStatus(UserStatus userStatus) {
+        return bookingRepository.findFirstByUser_UserState(userStatus)
+                .orElseThrow(() -> new IllegalStateException("Запись не найдена"));
+    }
+
+//    public void saveNewBookingTime(Long bo)
 }

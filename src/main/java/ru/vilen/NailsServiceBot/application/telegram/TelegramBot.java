@@ -1,5 +1,6 @@
 package ru.vilen.NailsServiceBot.application.telegram;
 
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -31,6 +32,11 @@ public class TelegramBot extends TelegramLongPollingBot {
         this.updateHandler = updateHandler;
     }
 
+    @PostConstruct
+    public void init() {
+        initCommands();
+    }
+
     @Override
     public void onUpdateReceived(Update update) {
         updateHandler.handle(update);
@@ -57,16 +63,16 @@ public class TelegramBot extends TelegramLongPollingBot {
         }
     }
 
-//    public void initCommands() {
-//        List<BotCommand> commands = Arrays
-//                .stream(CommandType.values())
-//                .map(command -> new BotCommand(command.getName(), command.getDescription()))
-//                .toList();
-//
-//        try {
-//            execute(new SetMyCommands(commands, null, null));
-//        } catch (TelegramApiException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
+    public void initCommands() {
+        List<BotCommand> commands = Arrays
+                .stream(CommandType.values())
+                .map(command -> new BotCommand(command.getName(), command.getDescription()))
+                .toList();
+
+        try {
+            execute(new SetMyCommands(commands, null, null));
+        } catch (TelegramApiException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

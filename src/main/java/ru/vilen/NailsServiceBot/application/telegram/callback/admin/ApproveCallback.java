@@ -41,7 +41,6 @@ public class ApproveCallback implements Callback {
         bot.sendNewMessage(SendMessage.builder()
                 .chatId(chatId)
                 .text("✅ Запись подтверждена!")
-                .replyMarkup(AdminKeyboardUtils.buildMenuInlineKeyboard())
                 .build());
     }
 

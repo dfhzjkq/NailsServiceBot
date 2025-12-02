@@ -11,9 +11,9 @@ import lombok.experimental.FieldDefaults;
 public enum CallbackType {
 
     // User
-    BOOK("💅 Записаться на маникюр"),
+    BOOK("💅 Новая запись"),
     MY("📖 Мои записи"),
-    HELP("❓ Помощь"),
+    HELP("🆘 Помощь"),
     DATE("\uD83D\uDCC5 Выбрать дату"),
     SETTINGS("⚙️ Настройки"),
     TIME("⏰ Выбрать время"),
@@ -35,6 +35,9 @@ public enum CallbackType {
     DELETE_USER("Удалить пользователя"),
     BAN_USER("Отправить в бан"),
     CHANGE_BOOKING("Изменить запись"),
+    CHANGE_DATE("Дата"),
+    CHANGE_TIME("Время"),
+    CHANGE_TYPE("Тип услуги"),
     DELETE_BOOKING("Удалить запись");
 
     String buttonText;

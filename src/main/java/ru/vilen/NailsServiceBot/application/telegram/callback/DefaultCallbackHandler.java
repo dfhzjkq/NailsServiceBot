@@ -44,6 +44,19 @@ public class DefaultCallbackHandler implements CallbackHandler {
             type = CallbackType.APPROVE;
         } else if (callbackData.startsWith("REJECT_")) {
             type = CallbackType.REJECT;
+        } else if (callbackData.startsWith("CHANGE_DATE_")
+                || callbackData.startsWith("CHANGE_TIME_")
+                || callbackData.startsWith("CHANGE_TYPE_")
+                || callbackData.startsWith("SELECT_BOOKING_")
+                || callbackData.startsWith("SET_NEW_DATE_")
+                || callbackData.startsWith("SET_NEW_TIME_")
+                || callbackData.startsWith("SET_NEW_TYPE_")
+                || callbackData.startsWith("ADMIN_TYPE_")
+        ) {
+            type = CallbackType.CHANGE_BOOKING;
+        } else if (callbackData.startsWith("ADMIN_CAL_PREV_")
+                || callbackData.startsWith("ADMIN_CAL_NEXT_")) {
+            type = CallbackType.CHANGE_BOOKING;
         } else {
             type = CallbackType.valueOf(callbackData);
         }
