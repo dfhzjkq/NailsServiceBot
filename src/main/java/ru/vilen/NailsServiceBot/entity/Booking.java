@@ -39,6 +39,9 @@ public class Booking {
     @Column(name = "status")
     BookingStatus status;
 
+    @Column(name = "reminder_sent", nullable = false)
+    Boolean reminderSent = false;
+
     public Duration getDuration() {
         return bookingType != null ? bookingType.getDuration() : Duration.ZERO;
     }
