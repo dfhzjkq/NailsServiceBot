@@ -270,4 +270,16 @@ public class UserKeyboardUtils {
                 .keyboard(List.of(row1))
                 .build();
     }
+
+    public static InlineKeyboardMarkup buildDeleteBookingInlineKeyboard() {
+        List<InlineKeyboardButton> row1 = new ArrayList<>();
+        row1.add(InlineKeyboardButton.builder()
+                .text(CallbackType.HOME.getButtonText())
+                .callbackData(CallbackType.HOME.toString())
+                .build());
+
+        return InlineKeyboardMarkup.builder()
+                .keyboard(List.of(row1))
+                .build();
+    }
 }

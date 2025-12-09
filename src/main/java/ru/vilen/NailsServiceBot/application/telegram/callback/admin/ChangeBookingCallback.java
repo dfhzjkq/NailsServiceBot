@@ -118,7 +118,7 @@ public class ChangeBookingCallback implements Callback {
         bot.sendNewMessage(
                 SendMessage.builder()
                         .chatId(chatId)
-                        .text("Выбери запись, для которой хочешь изменить дату:")
+                        .text("Выберите запись, которую хотите изменить:")
                         .replyMarkup(InlineKeyboardMarkup.builder().keyboard(rows).build())
                         .build()
         );

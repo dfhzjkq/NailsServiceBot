@@ -139,6 +139,22 @@ public class AdminKeyboardUtils {
                 .build();
     }
 
+    public static InlineKeyboardMarkup buildDeleteBookingActionKeyboard(Long bookingId) {
+        List<InlineKeyboardButton> row1 = new ArrayList<>();
+        row1.add(InlineKeyboardButton.builder()
+                .text("✅ Да")
+                .callbackData("YES_"  + bookingId)
+                .build());
+        row1.add(InlineKeyboardButton.builder()
+                .text("❌ Нет")
+                .callbackData("NO_"  + bookingId)
+                .build());
+
+        return InlineKeyboardMarkup.builder()
+                .keyboard(List.of(row1))
+                .build();
+    }
+
     public static InlineKeyboardMarkup buildChangeTypeInlineKeyboard(Long bookingId) {
         List<InlineKeyboardButton> row1 = new ArrayList<>();
         row1.add(InlineKeyboardButton.builder()
