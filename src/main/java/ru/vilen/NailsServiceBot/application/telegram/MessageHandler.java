@@ -88,10 +88,19 @@ public class MessageHandler {
             case WAITING_BOOK -> {
                 try {
                     LocalTime time = LocalTime.parse(text);
-                    bookingService.saveBookingTime(chatId, time);
 
+                    boolean success = bookingService.saveBookingTime(chatId, time);
+
+                    if (!success) {
+                        // Время недоступно — всё уже отправлено из BookingService
+                        return;
+                    }
+
+                    // Если успешно — отправляем подтверждение
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-                    String formattedDate = bookingService.getActiveBooking(chatId).getBookingDate().format(formatter);
+                    String formattedDate = bookingService.getActiveBooking(chatId)
+                            .getBookingDate()
+                            .format(formatter);
 
                     SendMessage message = SendMessage.builder()
                             .chatId(chatId)
@@ -101,21 +110,21 @@ public class MessageHandler {
                                     "Мастер свяжется с тобой в течение 10 минут 💅")
                             .replyMarkup(UserKeyboardUtils.buildHomeInlineKeyboard())
                             .build();
+
                     bot.sendNewMessage(message);
+
                     user.setUserState(UserStatus.REGISTERED);
                     userRepository.save(user);
+
                 } catch (DateTimeParseException e) {
-                    SendMessage error = SendMessage.builder()
+                    bot.sendNewMessage(SendMessage.builder()
                             .chatId(chatId)
-                            .text("⏰ Неверный формат времени.\nПроследи чтобы посередине было «:».\nВведи, например: 09:00")
-                            .build();
-                    bot.sendNewMessage(error);
-                } catch (IllegalStateException e) {
-                    SendMessage busy = SendMessage.builder()
-                            .chatId(chatId)
-                            .text("⚠️ К сожалению, это время уже занято.\nПопробуй выбрать другое ⏰")
-                            .build();
-                    bot.sendNewMessage(busy);
+                            .text("""
+                    ⏰ Неверный формат времени.
+                    Проследи чтобы посередине было «:».
+                    Введи, например: 09:00
+                    """)
+                            .build());
                 }
             } default -> {
                 SendMessage successMessage = SendMessage.builder()

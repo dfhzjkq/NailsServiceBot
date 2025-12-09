@@ -70,7 +70,7 @@ public class BookingService {
         bookingRepository.save(booking);
     }
 
-    public void saveBookingTime(Long chatId, LocalTime time) {
+    public boolean saveBookingTime(Long chatId, LocalTime time) {
 
         Booking booking = bookingRepository.findFirstByUserChatIdAndStatus(chatId, BookingStatus.WAITING_TIME)
                 .orElseThrow(() -> new IllegalStateException("Сначала нужно выбрать дату"));
@@ -83,35 +83,32 @@ public class BookingService {
        1. Проверка: нельзя записаться на прошедшее время
        ====================================================== */
         if (date.equals(today)) {
-
             LocalTime minAllowed = now.plusMinutes(10);
 
             if (time.isBefore(minAllowed)) {
-
                 bot.sendNewMessage(SendMessage.builder()
                         .chatId(chatId)
                         .text("""
-                            ⏰ Это время уже недоступно.
+                        ⏰ Это время уже недоступно.
 
-                            Можно записаться минимум через 10 минут от текущего момента.
-                            """)
+                        Можно записаться минимум через 10 минут от текущего момента.
+                        """)
                         .build());
-                return;
+
+                return false;
             }
         }
 
     /* ======================================================
-       2. Проверка: время входит в доступный интервал
+       2. Проверка — входит ли выбранное время в доступные интервалы
        ====================================================== */
         List<String> intervals = getAvailableIntervals(chatId, date);
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern("HH:mm");
 
         boolean valid = intervals.stream().anyMatch(interval -> {
             if (!interval.contains("—")) {
-                // одиночное время
                 return interval.equals(time.format(fmt));
             } else {
-                // интервал "HH:mm — HH:mm"
                 String[] parts = interval.split("—");
                 LocalTime start = LocalTime.parse(parts[0].trim());
                 LocalTime end = LocalTime.parse(parts[1].trim());
@@ -123,16 +120,16 @@ public class BookingService {
             bot.sendNewMessage(SendMessage.builder()
                     .chatId(chatId)
                     .text("""
-                        ⏰ Это время недоступно.
+                    ⏰ Это время недоступно.
 
-                        Пожалуйста, выбери время из предложенных интервалов.
-                        """)
+                    Пожалуйста, выбери время из предложенных интервалов.
+                    """)
                     .build());
-            return;
+            return false;
         }
 
     /* ======================================================
-       3. Если есть старая запись — отменяем
+       3. Если у пользователя есть старая запись — отменяем
        ====================================================== */
         Booking existingBooking = bookingRepository.findFirstByUserChatIdAndStatusIn(
                 chatId, List.of(BookingStatus.PENDING, BookingStatus.CONFIRMED)
@@ -145,10 +142,10 @@ public class BookingService {
             bot.sendNewMessage(SendMessage.builder()
                     .chatId(chatId)
                     .text("""
-                        ⚠️ Твоя предыдущая запись была отменена, чтобы освободить место для новой.
+                    ⚠️ Твоя предыдущая запись была отменена, чтобы освободить место для новой.
 
-                        📅 Не переживай! Я уже сохранил новую дату и время 💖
-                        """)
+                    📅 Не переживай! Я уже сохранил новую дату и время 💖
+                    """)
                     .build());
 
             bot.sendNewMessage(SendMessage.builder()
@@ -161,7 +158,7 @@ public class BookingService {
         }
 
     /* ======================================================
-       4. Проверка пересечений по длительности услуги
+       4. Проверка пересечений по длительности
        ====================================================== */
         Duration newDur = booking.getBookingType().getDuration();
         LocalTime newStart = time;
@@ -186,7 +183,7 @@ public class BookingService {
                         .chatId(chatId)
                         .text("⛔ Это время пересекается с другой записью. Выбери другое время.")
                         .build());
-                return;
+                return false;
             }
         }
 
@@ -200,6 +197,8 @@ public class BookingService {
         log.info("Создана запись chatId[{}], date[{}], time[{}]", chatId, date, time);
 
         sendBookingNotificationToAdmin(booking);
+
+        return true;
     }
 
     public Booking getActiveBooking(Long chatId) {
