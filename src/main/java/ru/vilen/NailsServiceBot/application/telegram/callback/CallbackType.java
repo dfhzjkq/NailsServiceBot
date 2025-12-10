@@ -26,19 +26,22 @@ public enum CallbackType {
     CHANGE_PHONE("\uD83D\uDCF1 Изменить номер"),
 
     // Admin
-    ADMIN_HOME("Главное меню"),
+    ADMIN_HOME("\uD83C\uDFE0 Главное меню"),
     APPROVE("✅ Принять запись"),
     REJECT("❌ Отклонить запись"),
-    SCHEDULE("Расписание"),
-    USERS("Пользователи"),
-    SCHEDULE_FOR_TODAY("Расписание на сегодня"),
-    DELETE_USER("Удалить пользователя"),
-    BAN_USER("Отправить в бан"),
-    CHANGE_BOOKING("Изменить запись"),
-    CHANGE_DATE("Дата"),
-    CHANGE_TIME("Время"),
-    CHANGE_TYPE("Тип услуги"),
-    DELETE_BOOKING("Удалить запись");
+    SCHEDULE("\uD83D\uDCC5 Расписание"),
+    USERS("\uD83D\uDC65 Пользователи"),
+    SCHEDULE_FOR_TODAY("\uD83D\uDCC6 Сегодня"),
+    DELETE_USER("\uD83D\uDDD1\uFE0F Удалить"),
+    BAN("⛔ Бан"),
+    CHANGE_BOOKING("✏\uFE0F Изменить"),
+    CHANGE_DATE("\uD83D\uDCC5 Дата"),
+    CHANGE_TIME("⏰ Время"),
+    CHANGE_TYPE("✨ Тип услуги"),
+    ADMIN_SETTINGS("⚙\uFE0F Настройки"),
+    BAN_USER("⛔ Бан"),
+    UNBAN_USER("✔️ Разбан"),
+    DELETE_BOOKING("\uD83D\uDDD1\uFE0F Удалить");
 
     String buttonText;
 }

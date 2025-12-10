@@ -8,5 +8,6 @@ public enum UserStatus {
     WAITING_BOOK,
     WAITING_NEW_NAME,
     WAITING_NEW_PHONE,
-    WAITING_NEW_TIME;
+    WAITING_NEW_TIME,
+    BANNED;
 }

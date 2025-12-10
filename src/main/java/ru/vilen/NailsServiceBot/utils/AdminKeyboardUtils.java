@@ -21,17 +21,21 @@ public class AdminKeyboardUtils {
                 .callbackData(CallbackType.SCHEDULE_FOR_TODAY.toString())
                 .build());
 
-        List<InlineKeyboardButton> row2 = new ArrayList<>();
-        row2.add(InlineKeyboardButton.builder()
+        row1.add(InlineKeyboardButton.builder()
                 .text(CallbackType.SCHEDULE.getButtonText())
                 .callbackData(CallbackType.SCHEDULE.toString())
                 .build());
 
 
-//        List<InlineKeyboardButton> row3 = new ArrayList<>();
+        List<InlineKeyboardButton> row2 = new ArrayList<>();
         row2.add(InlineKeyboardButton.builder()
                 .text(CallbackType.USERS.getButtonText())
                 .callbackData(CallbackType.USERS.toString())
+                .build());
+
+        row2.add(InlineKeyboardButton.builder()
+                .text(CallbackType.ADMIN_SETTINGS.getButtonText())
+                .callbackData(CallbackType.ADMIN_SETTINGS.toString())
                 .build());
 
         return InlineKeyboardMarkup.builder()
@@ -46,20 +50,19 @@ public class AdminKeyboardUtils {
                 .callbackData(CallbackType.CHANGE_BOOKING.toString())
                 .build());
 
-        List<InlineKeyboardButton> row2 = new ArrayList<>();
-        row2.add(InlineKeyboardButton.builder()
+        row1.add(InlineKeyboardButton.builder()
                 .text(CallbackType.DELETE_BOOKING.getButtonText())
                 .callbackData(CallbackType.DELETE_BOOKING.toString())
                 .build());
 
-        List<InlineKeyboardButton> row3 = new ArrayList<>();
-        row3.add(InlineKeyboardButton.builder()
+        List<InlineKeyboardButton> row2 = new ArrayList<>();
+        row2.add(InlineKeyboardButton.builder()
                 .text(CallbackType.ADMIN_HOME.getButtonText())
                 .callbackData(CallbackType.ADMIN_HOME.toString())
                 .build());
 
         return InlineKeyboardMarkup.builder()
-                .keyboard(List.of(row1, row2, row3))
+                .keyboard(List.of(row1, row2))
                 .build();
     }
 
@@ -102,8 +105,8 @@ public class AdminKeyboardUtils {
 
         List<InlineKeyboardButton> row2 = new ArrayList<>();
         row2.add(InlineKeyboardButton.builder()
-                .text(CallbackType.BAN_USER.getButtonText())
-                .callbackData(CallbackType.BAN_USER.toString())
+                .text(CallbackType.BAN.getButtonText())
+                .callbackData(CallbackType.BAN.toString())
                 .build());
 
         List<InlineKeyboardButton> row3 = new ArrayList<>();
@@ -148,6 +151,22 @@ public class AdminKeyboardUtils {
         row1.add(InlineKeyboardButton.builder()
                 .text("❌ Нет")
                 .callbackData("NO_"  + bookingId)
+                .build());
+
+        return InlineKeyboardMarkup.builder()
+                .keyboard(List.of(row1))
+                .build();
+    }
+
+    public static InlineKeyboardMarkup buildBanUserActionKeyboard(Long chatId) {
+        List<InlineKeyboardButton> row1 = new ArrayList<>();
+        row1.add(InlineKeyboardButton.builder()
+                .text(CallbackType.BAN_USER.getButtonText())
+                .callbackData("BAN_USER_"  + chatId)
+                .build());
+        row1.add(InlineKeyboardButton.builder()
+                .text(CallbackType.UNBAN_USER.getButtonText())
+                .callbackData("UNBAN_USER_"  + chatId)
                 .build());
 
         return InlineKeyboardMarkup.builder()

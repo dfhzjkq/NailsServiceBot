@@ -13,16 +13,11 @@ import ru.vilen.NailsServiceBot.application.telegram.TelegramBot;
 import ru.vilen.NailsServiceBot.application.telegram.callback.Callback;
 import ru.vilen.NailsServiceBot.application.telegram.callback.CallbackType;
 import ru.vilen.NailsServiceBot.entity.Booking;
-import ru.vilen.NailsServiceBot.entity.BookingType;
-import ru.vilen.NailsServiceBot.entity.User;
-import ru.vilen.NailsServiceBot.entity.UserStatus;
 import ru.vilen.NailsServiceBot.service.BookingService;
 import ru.vilen.NailsServiceBot.service.UserService;
 import ru.vilen.NailsServiceBot.utils.AdminKeyboardUtils;
 import ru.vilen.NailsServiceBot.utils.UserKeyboardUtils;
 
-import java.time.LocalDate;
-import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;

@@ -6,6 +6,9 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import ru.vilen.NailsServiceBot.entity.User;
+import ru.vilen.NailsServiceBot.entity.UserStatus;
+import ru.vilen.NailsServiceBot.service.UserService;
 
 @Slf4j
 @Service
@@ -16,8 +19,17 @@ public class UpdateHandler {
     CommandHandler commandHandler;
     CallbackHandler callbackHandler;
     MessageHandler registerHandler;
+    UserService userService;
 
     void handle(Update update) {
+        Long chatId = extractChatId(update);
+        if (chatId != null) {
+            User user = userService.getOrCreateUser(chatId);
+
+            if (user.getUserState() == UserStatus.BANNED) {
+                return;
+            }
+        }
         log.debug("[{}] Получен новый update!",
                 update.getUpdateId());
         if (update.hasMessage()) {
@@ -44,5 +56,17 @@ public class UpdateHandler {
 
         log.warn("[{}] В update что-то прилетело, но мы это не обработали!",
                 update.getUpdateId());
+    }
+
+    private Long extractChatId(Update update) {
+        try {
+            if (update.hasMessage()) {
+                return update.getMessage().getChatId();
+            }
+            if (update.hasCallbackQuery()) {
+                return update.getCallbackQuery().getFrom().getId();
+            }
+        } catch (Exception ignored) {}
+        return null;
     }
 }

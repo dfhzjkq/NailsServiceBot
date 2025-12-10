@@ -77,6 +77,18 @@ public class UserService {
         }
     }
 
+    public void banUser(Long chatId) {
+        User user = getOrCreateUser(chatId);
+        user.setUserState(UserStatus.BANNED);
+        userRepository.save(user);
+    }
+
+    public void unBanUser(Long chatId) {
+        User user = getOrCreateUser(chatId);
+        user.setUserState(UserStatus.REGISTERED);
+        userRepository.save(user);
+    }
+
     public boolean isAdmin(Long chatId) {
         return chatId.equals(adminChatId);
     }

@@ -44,7 +44,7 @@ public class DefaultCallbackHandler implements CallbackHandler {
             type = CallbackType.APPROVE;
         } else if (callbackData.startsWith("REJECT_")) {
             type = CallbackType.REJECT;
-        }  else if (callbackData.startsWith("SELECT_BOOKING_FOR_DELETE_")
+        } else if (callbackData.startsWith("SELECT_BOOKING_FOR_DELETE_")
                 || callbackData.startsWith("YES_")
                 || callbackData.startsWith("NO_")
         ) {
@@ -59,6 +59,11 @@ public class DefaultCallbackHandler implements CallbackHandler {
                 || callbackData.startsWith("ADMIN_TYPE_")
         ) {
             type = CallbackType.CHANGE_BOOKING;
+        } else if (callbackData.startsWith("SELECT_USER_")
+                || callbackData.startsWith("BAN_USER_")
+                || callbackData.startsWith("UNBAN_USER_")
+        ) {
+            type = CallbackType.BAN;
         } else if (callbackData.startsWith("ADMIN_CAL_PREV_")
                 || callbackData.startsWith("ADMIN_CAL_NEXT_")) {
             type = CallbackType.CHANGE_BOOKING;
