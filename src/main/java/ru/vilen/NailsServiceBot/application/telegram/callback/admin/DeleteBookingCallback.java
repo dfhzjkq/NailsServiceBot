@@ -12,9 +12,9 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import ru.vilen.NailsServiceBot.application.telegram.TelegramBot;
 import ru.vilen.NailsServiceBot.application.telegram.callback.Callback;
 import ru.vilen.NailsServiceBot.application.telegram.callback.CallbackType;
+import ru.vilen.NailsServiceBot.config.TelegramBotProperties;
 import ru.vilen.NailsServiceBot.entity.Booking;
 import ru.vilen.NailsServiceBot.service.BookingService;
-import ru.vilen.NailsServiceBot.service.UserService;
 import ru.vilen.NailsServiceBot.utils.AdminKeyboardUtils;
 import ru.vilen.NailsServiceBot.utils.UserKeyboardUtils;
 
@@ -28,9 +28,9 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class DeleteBookingCallback implements Callback {
 
+    TelegramBotProperties properties;
     TelegramBot bot;
     BookingService bookingService;
-    UserService userService;
 
     @Override
     public CallbackType getType() {
@@ -89,7 +89,7 @@ public class DeleteBookingCallback implements Callback {
         bot.sendNewMessage(
                 SendMessage.builder()
                         .chatId(chatId)
-                        .text("Выберите запись, которую хотите удалить")
+                        .text("🗑️ Выберите запись, которую хотите удалить:")
                         .replyMarkup(InlineKeyboardMarkup.builder().keyboard(rows).build())
                         .build()
         );
@@ -100,7 +100,7 @@ public class DeleteBookingCallback implements Callback {
 
         bot.sendNewMessage(SendMessage.builder()
                 .chatId(chatId)
-                .text("Отправить сообщение с благодарностью и просьбой оставить отзыв?")
+                .text("💬 Отправить клиенту сообщение с просьбой оставить отзыв?")
                 .replyMarkup(AdminKeyboardUtils.buildDeleteBookingActionKeyboard(bookingId))
                 .build());
     }
@@ -110,7 +110,7 @@ public class DeleteBookingCallback implements Callback {
 
         SendMessage adminMessage = SendMessage.builder()
                 .chatId(chatId)
-                .text("Запись удалена!")
+                .text("✅ Запись успешно удалена!")
                 .build();
 
         bookingService.deleteBookingById(bookingId);
@@ -123,19 +123,18 @@ public class DeleteBookingCallback implements Callback {
 
         SendMessage adminMessage = SendMessage.builder()
                 .chatId(chatId)
-                .text("Запись удалена, уведомление отправлено!")
+                .text("✅ Запись удалена, уведомление отправлено!")
                 .build();
 
         SendMessage userMessage = SendMessage.builder()
                 .chatId(userChatId)
-                .text(
-                        "Спасибо, что выбрал наш сервис \uD83D\uDC85\n" +
+                .text(String.format("Спасибо, что выбрал наш сервис \uD83D\uDC85\n" +
                         "Нам важно, чтобы каждая процедура приносила только приятные впечатления.\n" +
                         "\n" +
                         "Если есть минутка — оставь, пожалуйста, отзыв на Авито:\n" +
-                        "\uD83D\uDC49 https://www.avito.ru/schelkovo/predlozheniya_uslug/manikyur_pedikyur_na_domu_schelkovo_4516472544?utm_campaign=native&utm_medium=item_page_android&utm_source=soc_sharing\n" +
+                        "\uD83D\uDC49 %s\n" +
                         "\n" +
-                        "Твоя оценка помогает нам развиваться и делает сервис лучше ✨")
+                        "Твоя оценка помогает нам развиваться и делает сервис лучше ✨", properties.getAvitoLink()))
                 .replyMarkup(UserKeyboardUtils.buildDeleteBookingInlineKeyboard())
                 .build();
 

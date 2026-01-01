@@ -12,14 +12,10 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import ru.vilen.NailsServiceBot.application.telegram.TelegramBot;
 import ru.vilen.NailsServiceBot.application.telegram.callback.Callback;
 import ru.vilen.NailsServiceBot.application.telegram.callback.CallbackType;
-import ru.vilen.NailsServiceBot.entity.Booking;
 import ru.vilen.NailsServiceBot.entity.User;
-import ru.vilen.NailsServiceBot.service.BookingService;
 import ru.vilen.NailsServiceBot.service.UserService;
 import ru.vilen.NailsServiceBot.utils.AdminKeyboardUtils;
-import ru.vilen.NailsServiceBot.utils.UserKeyboardUtils;
 
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +26,6 @@ import java.util.List;
 public class BanCallback implements Callback {
 
     TelegramBot bot;
-    BookingService bookingService;
     UserService userService;
 
     @Override
@@ -86,7 +81,7 @@ public class BanCallback implements Callback {
         bot.sendNewMessage(
                 SendMessage.builder()
                         .chatId(chatId)
-                        .text("Выберите пользователя, которого хотите забанить или разбанить")
+                        .text("\uD83D\uDC65 Пожалуйста, выберите пользователя, которого вы хотите забанить или разбанить.")
                         .replyMarkup(InlineKeyboardMarkup.builder().keyboard(rows).build())
                         .build()
         );
@@ -97,7 +92,7 @@ public class BanCallback implements Callback {
 
         bot.sendNewMessage(SendMessage.builder()
                 .chatId(chatId)
-                .text("Хотите забанить или разбанить?")
+                .text("⚖\uFE0F Выберите действие: забанить или разбанить пользователя?")
                 .replyMarkup(AdminKeyboardUtils.buildBanUserActionKeyboard(userChatId))
                 .build());
     }
@@ -107,7 +102,7 @@ public class BanCallback implements Callback {
 
         SendMessage adminMessage = SendMessage.builder()
                 .chatId(chatId)
-                .text("Пользователь забанен!")
+                .text("\uD83D\uDD12 Пользователь успешно заблокирован!")
                 .build();
 
         userService.banUser(userChatId);
@@ -119,7 +114,7 @@ public class BanCallback implements Callback {
 
         SendMessage adminMessage = SendMessage.builder()
                 .chatId(chatId)
-                .text("Пользователь разбанен!")
+                .text("\uD83D\uDD13 Пользователь успешно разблокирован!")
                 .build();
 
         userService.unBanUser(userChatId);

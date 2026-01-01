@@ -5,6 +5,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import ru.vilen.NailsServiceBot.application.telegram.TelegramBot;
+import ru.vilen.NailsServiceBot.config.TelegramBotProperties;
 import ru.vilen.NailsServiceBot.entity.Booking;
 import ru.vilen.NailsServiceBot.entity.BookingStatus;
 
@@ -16,6 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class NotificationService {
 
+    private final TelegramBotProperties properties;
     private final BookingService bookingService;
     private final UserService userService;
     private final TelegramBot bot;
@@ -61,10 +63,11 @@ public class NotificationService {
                                 "📅 %s\n" +
                                 "⏰ %s\n" +
                                 "%s\n\n" +
-                                "Если нужно что-то уточнить — пиши мастеру: @link",
+                                "Если нужно что-то уточнить — пиши мастеру: %s",
                         bookingService.formatTheDate(booking.getBookingDate()),
                         booking.getBookingTime(),
-                        booking.getBookingType().getLabel()
+                        booking.getBookingType().getLabel(),
+                        properties.getAdminLink()
                 ))
                 .build());
     }

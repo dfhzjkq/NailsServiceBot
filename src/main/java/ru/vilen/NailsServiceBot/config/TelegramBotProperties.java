@@ -16,4 +16,6 @@ public class TelegramBotProperties {
 
     String name;
     String token;
+    String adminLink;
+    String avitoLink;
 }

@@ -47,7 +47,7 @@ public class ScheduleCallback implements Callback {
         if (bookings.isEmpty()) {
             SendMessage message = SendMessage.builder()
                     .chatId(chatId)
-                    .text("Пока нет активных записей!")
+                    .text("📭 Пока нет активных записей!")
                     .replyMarkup(AdminKeyboardUtils.buildScheduleInlineKeyboard())
                     .build();
 

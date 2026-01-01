@@ -6,6 +6,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import ru.vilen.NailsServiceBot.config.TelegramBotProperties;
 import ru.vilen.NailsServiceBot.entity.Booking;
 import ru.vilen.NailsServiceBot.entity.User;
 import ru.vilen.NailsServiceBot.entity.UserStatus;
@@ -23,6 +24,7 @@ import java.time.format.DateTimeParseException;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class MessageHandler {
 
+    TelegramBotProperties properties;
     TelegramBot bot;
     UserService userService;
     UserRepository userRepository;
@@ -107,7 +109,7 @@ public class MessageHandler {
                             .text("✅ Запись создана!\n" +
                                     "Дата: " + formattedDate + "\n" +
                                     "Время: " + text + "\n" +
-                                    "Мастер свяжется с тобой в течение 10 минут 💅")
+                                    "Мастер скоро свяжется с тобой 💅")
                             .replyMarkup(UserKeyboardUtils.buildHomeInlineKeyboard())
                             .build();
 
@@ -164,7 +166,7 @@ public class MessageHandler {
                             "✨ Услуга: %s  \n" +
                             "\n" +
                             "Мастер изменил время твоей записи.  \n" +
-                            "Если новое время тебе не подходит — напиши мастеру в личные сообщения: @link", bookingService.formatTheDate(booking.getBookingDate()), booking.getBookingTime(), booking.getBookingType().getLabel()))
+                            "Если новое время тебе не подходит — напиши мастеру в личные сообщения: %s", bookingService.formatTheDate(booking.getBookingDate()), booking.getBookingTime(), booking.getBookingType().getLabel(), properties.getAdminLink()))
                     .build();
 
             bot.sendNewMessage(message);

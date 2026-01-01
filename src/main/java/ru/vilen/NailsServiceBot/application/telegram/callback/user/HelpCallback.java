@@ -10,6 +10,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.vilen.NailsServiceBot.application.telegram.TelegramBot;
 import ru.vilen.NailsServiceBot.application.telegram.callback.Callback;
 import ru.vilen.NailsServiceBot.application.telegram.callback.CallbackType;
+import ru.vilen.NailsServiceBot.config.TelegramBotProperties;
 import ru.vilen.NailsServiceBot.service.BookingService;
 import ru.vilen.NailsServiceBot.utils.UserKeyboardUtils;
 
@@ -19,6 +20,7 @@ import ru.vilen.NailsServiceBot.utils.UserKeyboardUtils;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class HelpCallback implements Callback {
 
+    TelegramBotProperties properties;
     TelegramBot bot;
     BookingService bookingService;
 
@@ -37,12 +39,12 @@ public class HelpCallback implements Callback {
 
         SendMessage message = SendMessage.builder()
                 .chatId(chatId)
-                .text("\uD83D\uDCAC Если возникли вопросы — я всегда на связи!\n" +
+                .text(String.format("\uD83D\uDCAC Если возникли вопросы — я всегда на связи!\n" +
                         "\n" +
                         "Чтобы получить помощь или задать любой вопрос, напиши мастеру в личные сообщения:\n" +
-                        "\uD83D\uDC49 @your_link\n" +
+                        "\uD83D\uDC49 %s\n" +
                         "\n" +
-                        "Ответ придёт в ближайшее время.")
+                        "Ответ придёт в ближайшее время.", properties.getAdminLink()))
                 .replyMarkup(UserKeyboardUtils.buildHelpInlineKeyboard())
                 .build();
 

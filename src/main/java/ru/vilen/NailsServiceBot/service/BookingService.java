@@ -217,7 +217,7 @@ public class BookingService {
 
             SendMessage message = SendMessage.builder()
                     .chatId(adminChatId)
-                    .text(String.format("Клиент %s отменил запись на %s(%s)",
+                    .text(String.format("❌ Клиент %s отменил запись на %s (%s)",
                             booking.getUser().getUserName(),
                             booking.getBookingTime(),
                             formatTheDate(booking.getBookingDate())))
@@ -257,7 +257,7 @@ public class BookingService {
         StringBuilder schedule = new StringBuilder("📅 Подтверждённые записи на " + date.format(dateFormatter) + ":\n\n");
 
         if (confirmedBookings.isEmpty()) {
-            schedule.append("Нет подтверждённых записей.\n\n");
+            schedule.append("📭 Пока нет подтверждённых записей.\n\n");
         } else {
             for (Booking b : confirmedBookings) {
 

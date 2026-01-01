@@ -42,7 +42,7 @@ public class UsersCallback implements Callback {
         if (users.isEmpty()) {
             SendMessage message = SendMessage.builder()
                     .chatId(chatId)
-                    .text("Пока нет пользователей!")
+                    .text("📭 Пока нет пользователей!")
                     .replyMarkup(AdminKeyboardUtils.buildScheduleInlineKeyboard())
                     .build();
 
@@ -50,19 +50,21 @@ public class UsersCallback implements Callback {
             return;
         }
 
-        StringBuilder sb = new StringBuilder("Все пользователи:\n\n");
+        StringBuilder sb = new StringBuilder("\uD83D\uDC65 Все пользователи:\n\n");
 
         for (User user : users) {
             if (user.getRole() != UserRole.ADMIN) {
                 String line = String.format("""
-                Имя: %s
-                Телефон: <code>%s</code>
+                <blockquote>%s</blockquote>
+                <code>%s</code>
                 Id: <code>%d</code>
+                Status: <b>%s</b>
                 Ссылка: @%s\n
                 """,
                         user.getUserName(),
                         user.getPhoneNumber(),
                         user.getChatId(),
+                        user.getUserState(),
                         user.getUserLink()
                 );
 

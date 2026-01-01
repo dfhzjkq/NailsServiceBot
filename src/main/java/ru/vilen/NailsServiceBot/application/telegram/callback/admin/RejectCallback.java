@@ -11,7 +11,6 @@ import ru.vilen.NailsServiceBot.application.telegram.TelegramBot;
 import ru.vilen.NailsServiceBot.application.telegram.callback.Callback;
 import ru.vilen.NailsServiceBot.application.telegram.callback.CallbackType;
 import ru.vilen.NailsServiceBot.service.BookingService;
-import ru.vilen.NailsServiceBot.utils.AdminKeyboardUtils;
 
 @Slf4j
 @Service

@@ -62,7 +62,9 @@ public class MyCallback implements Callback {
                 .chatId(chatId)
                 .text(String.format("""
                         💅 Твоя действующая запись:
-                        %s на %s
+                        
+                        📅 Дата: %s
+                        ⏰ Время: %s
                         """, date, time))
                 .replyMarkup(UserKeyboardUtils.buildMyInlineKeyboard())
                 .build();

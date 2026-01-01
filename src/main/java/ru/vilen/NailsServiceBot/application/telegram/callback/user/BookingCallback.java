@@ -10,6 +10,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.vilen.NailsServiceBot.application.telegram.TelegramBot;
 import ru.vilen.NailsServiceBot.application.telegram.callback.Callback;
 import ru.vilen.NailsServiceBot.application.telegram.callback.CallbackType;
+import ru.vilen.NailsServiceBot.config.TelegramBotProperties;
 import ru.vilen.NailsServiceBot.service.BookingService;
 import ru.vilen.NailsServiceBot.utils.UserKeyboardUtils;
 
@@ -19,6 +20,7 @@ import ru.vilen.NailsServiceBot.utils.UserKeyboardUtils;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class BookingCallback implements Callback {
 
+    TelegramBotProperties properties;
     TelegramBot bot;
     BookingService bookingService;
 
@@ -38,7 +40,18 @@ public class BookingCallback implements Callback {
 
         SendMessage message = SendMessage.builder()
                 .chatId(chatId)
-                .text("✨Выбери тип услуги:")
+                .text(String.format("✨ Выбери тип услуги:\n\n" +
+                        "💅 *Маникюр*\n" +
+                        "└ Покрытие гель-лаком — 1 ч 45 мин. — 1 700 ₽\n\n" +
+                        "🦶 *Педикюр*\n" +
+                        "└ Обработка стоп и пальцев + покрытие гель-лаком — 1 ч 45 мин. — \n2 200 ₽\n\n" +
+                        "💅+🦶 *Маникюр + Педикюр*\n" +
+                        "└ Комплекс с покрытием — 3 ч 30 мин. — 3 900 ₽\n\n" +
+                        "➕ *Дополнительные услуги:*\n" +
+                        "├ Ремонт ногтя — 150 ₽\n" +
+                        "└ Маникюр без покрытия — 700 ₽\n\n" +
+                        "📩 _Для записи на доп. услуги — напиши мастеру:_ %s", properties.getAdminLink()))
+                .parseMode("Markdown")
                 .replyMarkup(UserKeyboardUtils.buildBookInlineKeyboard())
                 .build();
 

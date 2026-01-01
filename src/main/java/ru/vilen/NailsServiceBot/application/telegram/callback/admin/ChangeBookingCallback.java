@@ -12,6 +12,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import ru.vilen.NailsServiceBot.application.telegram.TelegramBot;
 import ru.vilen.NailsServiceBot.application.telegram.callback.Callback;
 import ru.vilen.NailsServiceBot.application.telegram.callback.CallbackType;
+import ru.vilen.NailsServiceBot.config.TelegramBotProperties;
 import ru.vilen.NailsServiceBot.entity.Booking;
 import ru.vilen.NailsServiceBot.entity.BookingType;
 import ru.vilen.NailsServiceBot.entity.User;
@@ -32,6 +33,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ChangeBookingCallback implements Callback {
 
+    TelegramBotProperties properties;
     TelegramBot bot;
     BookingService bookingService;
     UserService userService;
@@ -118,7 +120,7 @@ public class ChangeBookingCallback implements Callback {
         bot.sendNewMessage(
                 SendMessage.builder()
                         .chatId(chatId)
-                        .text("Выберите запись, которую хотите изменить:")
+                        .text("\uD83D\uDCDD Выберите запись, которую хотите изменить:")
                         .replyMarkup(InlineKeyboardMarkup.builder().keyboard(rows).build())
                         .build()
         );
@@ -129,7 +131,7 @@ public class ChangeBookingCallback implements Callback {
 
         bot.sendNewMessage(SendMessage.builder()
                 .chatId(chatId)
-                .text("Что хотите сделать?")
+                .text("⚙\uFE0F Выберите действие с записью:")
                 .replyMarkup(AdminKeyboardUtils.buildChangeBookingActionKeyboard(bookingId))
                 .build());
     }
@@ -140,7 +142,7 @@ public class ChangeBookingCallback implements Callback {
         bot.sendNewMessage(
                 SendMessage.builder()
                         .chatId(chatId)
-                        .text("Выберите новую дату для записи:")
+                        .text("\uD83D\uDCC5 Выберите новую дату для записи:")
                         .replyMarkup(AdminKeyboardUtils.buildCalendar(bookingId, LocalDate.now()))
                         .build()
         );
@@ -156,7 +158,7 @@ public class ChangeBookingCallback implements Callback {
 
         bot.sendNewMessage(SendMessage.builder()
                 .chatId(chatId)
-                .text("Выберите новую дату:")
+                .text("\uD83D\uDCC5 Выберите новую дату для записи:")
                 .replyMarkup(AdminKeyboardUtils.buildCalendar(bookingId, newMonth))
                 .build());
     }
@@ -171,7 +173,7 @@ public class ChangeBookingCallback implements Callback {
 
         bot.sendNewMessage(SendMessage.builder()
                 .chatId(chatId)
-                .text("Выберите новую дату:")
+                .text("\uD83D\uDCC5 Выберите новую дату для записи:")
                 .replyMarkup(AdminKeyboardUtils.buildCalendar(bookingId, newMonth))
                 .build());
     }
@@ -192,7 +194,7 @@ public class ChangeBookingCallback implements Callback {
         bot.sendNewMessage(
                 SendMessage.builder()
                         .chatId(chatId)
-                        .text("Дата успешно изменена!")
+                        .text("✅ Дата записи успешно изменена!")
                         .build()
         );
     }
@@ -210,7 +212,7 @@ public class ChangeBookingCallback implements Callback {
         bot.sendNewMessage(
                 SendMessage.builder()
                         .chatId(chatId)
-                        .text("Введите новое время")
+                        .text("⏰ Введите новое время для записи:")
                         .build()
         );
     }
@@ -221,7 +223,7 @@ public class ChangeBookingCallback implements Callback {
         bot.sendNewMessage(
                 SendMessage.builder()
                         .chatId(chatId)
-                        .text("Выберите тип услуги:")
+                        .text("✨ Выберите тип услуги:")
                         .replyMarkup(AdminKeyboardUtils.buildChangeTypeInlineKeyboard(bookingId))
                         .build()
         );
@@ -241,7 +243,7 @@ public class ChangeBookingCallback implements Callback {
         bot.sendNewMessage(
                 SendMessage.builder()
                         .chatId(chatId)
-                        .text("Тип успешно изменен!")
+                        .text("✅ Тип услуги успешно изменён!")
                         .build()
         );
     }
@@ -256,7 +258,7 @@ public class ChangeBookingCallback implements Callback {
                         "✨ Услуга: %s  \n" +
                         "\n" +
                         "Мастер изменил время твоей записи.  \n" +
-                        "Если новое время тебе не подходит — напиши мастеру в личные сообщения: @link", bookingService.formatTheDate(booking.getBookingDate()), booking.getBookingTime(), booking.getBookingType().getLabel()))
+                        "Если новое время тебе не подходит — напиши мастеру в личные сообщения: %s", bookingService.formatTheDate(booking.getBookingDate()), booking.getBookingTime(), booking.getBookingType().getLabel(), properties.getAdminLink()))
                 .build();
 
         bot.sendNewMessage(message);

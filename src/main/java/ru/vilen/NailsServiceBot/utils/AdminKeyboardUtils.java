@@ -99,24 +99,18 @@ public class AdminKeyboardUtils {
     public static InlineKeyboardMarkup buildUsersInlineKeyboard() {
         List<InlineKeyboardButton> row1 = new ArrayList<>();
         row1.add(InlineKeyboardButton.builder()
-                .text(CallbackType.DELETE_USER.getButtonText())
-                .callbackData(CallbackType.DELETE_USER.toString())
-                .build());
-
-        List<InlineKeyboardButton> row2 = new ArrayList<>();
-        row2.add(InlineKeyboardButton.builder()
                 .text(CallbackType.BAN.getButtonText())
                 .callbackData(CallbackType.BAN.toString())
                 .build());
 
-        List<InlineKeyboardButton> row3 = new ArrayList<>();
-        row3.add(InlineKeyboardButton.builder()
+        List<InlineKeyboardButton> row2 = new ArrayList<>();
+        row2.add(InlineKeyboardButton.builder()
                 .text(CallbackType.ADMIN_HOME.getButtonText())
                 .callbackData(CallbackType.ADMIN_HOME.toString())
                 .build());
 
         return InlineKeyboardMarkup.builder()
-                .keyboard(List.of(row1, row2, row3))
+                .keyboard(List.of(row1, row2))
                 .build();
     }
 

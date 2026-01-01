@@ -12,7 +12,6 @@ import ru.vilen.NailsServiceBot.application.telegram.callback.Callback;
 import ru.vilen.NailsServiceBot.application.telegram.callback.CallbackType;
 import ru.vilen.NailsServiceBot.entity.Booking;
 import ru.vilen.NailsServiceBot.entity.BookingStatus;
-import ru.vilen.NailsServiceBot.repository.BookingRepository;
 import ru.vilen.NailsServiceBot.service.BookingService;
 import ru.vilen.NailsServiceBot.utils.AdminKeyboardUtils;
 
@@ -28,7 +27,6 @@ import java.util.List;
 public class ScheduleForTodayCallback implements Callback {
     TelegramBot bot;
     BookingService bookingService;
-    BookingRepository bookingRepository;
 
     @Override
     public void apply(Update update) {
@@ -52,7 +50,7 @@ public class ScheduleForTodayCallback implements Callback {
         if (bookings.isEmpty()) {
             SendMessage message = SendMessage.builder()
                     .chatId(chatId)
-                    .text("Пока нет активных записей!")
+                    .text("📭 Пока нет активных записей!")
                     .replyMarkup(AdminKeyboardUtils.buildScheduleForTodayInlineKeyboard())
                     .build();
 
